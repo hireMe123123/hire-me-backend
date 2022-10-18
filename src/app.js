@@ -8,3 +8,4 @@ app.get("/greetings", (request, response) => {
 app.listen(port, () => {
   console.log(`Server is Running on port ${port}`);
 });
+require("dotenv").config();
