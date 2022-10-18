@@ -20,9 +20,9 @@ app.use(bodyParser.json());
 
 app.use("/api", routerNavigation);
 
-app.get("/greetings", (request, response) => {
-  response.status(200).send("Hello World!");
-});
+// app.get("/greetings", (request, response) => {
+//   response.status(200).send("Hello World!");
+// });
 
 app.use("/*", (request, response) => {
   response.status(404).send("Path Not Found !");

@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-
 # <h1 align="center">ExpressJS - HireMe-App RESTfull API</h1>
-
-<h1 align="center">ExpressJS - Next-Event-Organizer  RESTfull API</h1>
->>>>>>> 5bbacb4ee0c936797c97bbe59fc6534410db5745
 
 #background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
 

@@ -1,9 +1,8 @@
 const wrapper = require("../utils/wrapper");
 
 module.exports = {
-  showGreetings: async (request, response) => {
+  greetings: async (request, response) => {
     try {
-      // return response.status(200).send("Hello World!");
       return wrapper.response(
         response,
         200,
