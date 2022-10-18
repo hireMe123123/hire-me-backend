@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <h1 align="center">ExpressJS - HireMe-App  RESTfull API</h1>
+=======
+<h1 align="center">ExpressJS - Next-Event-Organizer  RESTfull API</h1>
+>>>>>>> 5bbacb4ee0c936797c97bbe59fc6534410db5745
 
 #background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
@@ -23,7 +27,11 @@
 5. Create a database with the name #nama_database, and Import file sql to **supabase**
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3001/)
+<<<<<<< HEAD
 8. You can see all the end point [here]()
+=======
+8. You can see all the end point [here](https://documenter.getpostman.com/view/19983829/VVBUwm3o)
+>>>>>>> 5bbacb4ee0c936797c97bbe59fc6534410db5745
 
 ## Set up .env file
 
@@ -36,5 +44,9 @@ SUPABASE_KEY //Databes KEY
 
 ## License
 
+<<<<<<< HEAD
 © [HireMe-App](https://github.com/hireMe123123)
+=======
+© [Ahmad Dhohir Azhari](https://github.com/ahmaddhohirazhari)
+>>>>>>> 5bbacb4ee0c936797c97bbe59fc6534410db5745
 ```
