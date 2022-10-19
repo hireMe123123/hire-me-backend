@@ -2,7 +2,7 @@ const companyModel = require("../models/company");
 const wrapper = require("../utils/wrapper");
 
 module.exports = {
-  createUser: async (request, response) => {
+  createCompany: async (request, response) => {
     try {
       // console.log(request.body);
       const {
