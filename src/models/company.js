@@ -1,6 +1,20 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
+  updateCompany: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("company")
+        .update(data)
+        .eq("id", id)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
   createCompany: (data) =>
     new Promise((resolve, reject) => {
       supabase
