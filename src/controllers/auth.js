@@ -7,8 +7,6 @@ module.exports = {
     try {
       const { name, email, phoneNumber, password, confirmPassword } =
         request.body;
-      console.log(name);
-      console.log(request.body);
       // PROSES VALIDASI PASSWORD
       if (password.length < 6) {
         return wrapper.response(
@@ -19,6 +17,7 @@ module.exports = {
         );
       }
 
+      // CONMFIRM PASSWORD
       if (password !== confirmPassword) {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
