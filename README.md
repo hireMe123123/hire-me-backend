@@ -29,7 +29,6 @@
 
 Open .env file on your favorite code editor, and copy paste this code below :
 
-```
 PORT // Server Host
 SUPABASE_URL //Database URL
 SUPABASE_KEY //Databes KEY
@@ -37,4 +36,3 @@ SUPABASE_KEY //Databes KEY
 ## License
 
 © [HireMe-App](https://github.com/hireMe123123)
-```
