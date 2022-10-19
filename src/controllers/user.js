@@ -6,7 +6,7 @@ module.exports = {
       return wrapper.response(
         response,
         200,
-        "Success Get Greetings",
+        "Success Get test",
         "Hello World !"
       );
     } catch (error) {
