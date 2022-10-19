@@ -20,6 +20,8 @@
     "helmet": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
+    "otp-generator": "^4.0.0",
+    "redis": "^4.3.1",
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
