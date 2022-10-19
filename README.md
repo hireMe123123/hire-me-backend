@@ -23,13 +23,8 @@
 5. Create a database with the name #nama_database, and Import file sql to **supabase**
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3001/)
-   <<<<<<< HEAD
 8. # You can see all the end point [here]()
-   <<<<<<< HEAD
-9. # You can see all the end point [here]()
-10. You can see all the end point [here](https://documenter.getpostman.com/view/19983829/VVBUwm3o)
-    > > > > > > > 5bbacb4ee0c936797c97bbe59fc6534410db5745
-    > > > > > > > af82b66bd8a0a88836ed3a31bc1dfa057c7471fd
+9. You can see all the end point [here]()
 
 ## Set up .env file
 
