@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("dotenv").config("./.env");
 const express = require("express");
 const cors = require("cors");
 const morgan = require("morgan");
@@ -32,4 +32,3 @@ app.use("/*", (request, response) => {
 app.listen(port, () => {
   console.log(`Server is Running on port ${port}`);
 });
-require("dotenv").config();
