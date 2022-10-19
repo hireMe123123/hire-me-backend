@@ -78,22 +78,4 @@ module.exports = {
       return wrapper.response(response, status, statusText, errorData);
     }
   },
-  getAllUser: async (request, response) => {
-    try {
-      const result = await authModel.getUserByEmail();
-      return wrapper.response(
-        response,
-        result.status,
-        "Success Get User !",
-        result.data
-      );
-    } catch (error) {
-      const {
-        status = 500,
-        statusText = "Internal Server Error",
-        error: errorData = null,
-      } = error;
-      return wrapper.response(response, status, statusText, errorData);
-    }
-  },
 };
