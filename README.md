@@ -1,4 +1,4 @@
-# <h1 align="center">ExpressJS - HireMe-App RESTfull API</h1>
+<h1 align="center">ExpressJS - HireMe-App  RESTfull API</h1>
 
 #background_projek. [More about Express](https://en.wikipedia.org/wiki/Express.js)
 
@@ -23,11 +23,7 @@
 5. Create a database with the name #nama_database, and Import file sql to **supabase**
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3001/)
-   <<<<<<< HEAD
-8. # You can see all the end point [here]()
-   <<<<<<< HEAD
-9. # You can see all the end point [here]()
-10. You can see all the end point [here]()
+8. # You can see all the end point [here](https://documenter.getpostman.com/view/19983829/VVBUwm3o)
 
 ## Set up .env file
 
