@@ -3,8 +3,8 @@ module.exports = {
     const result = {
       status,
       message: msg,
-      data, // data: data
-      pagination, // pagination : pagination
+      data,
+      pagination,
     };
     return response.status(status).json(result);
   },
