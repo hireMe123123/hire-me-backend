@@ -17,6 +17,7 @@ module.exports = {
         );
       }
 
+      // CONMFIRM PASSWORD
       if (password !== confirmPassword) {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
