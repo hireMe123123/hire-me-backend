@@ -7,7 +7,7 @@ module.exports = {
     try {
       const { name, email, phoneNumber, password, confirmPassword } =
         request.body;
-      console.log(name);
+
       // PROSES VALIDASI PASSWORD
       if (password.length < 6) {
         return wrapper.response(
