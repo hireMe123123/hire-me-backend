@@ -24,7 +24,6 @@
 6. Open Postman desktop application or Chrome web app extension that has installed before
 7. Choose HTTP Method and enter request url.(ex. localhost:3001/)
 8. # You can see all the end point [here]()
-9. You can see all the end point [here]()
 
 ## Set up .env file
 
@@ -38,5 +37,4 @@ SUPABASE_KEY //Databes KEY
 ## License
 
 © [HireMe-App](https://github.com/hireMe123123)
-
 ```
