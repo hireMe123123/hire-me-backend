@@ -28,16 +28,25 @@ module.exports = {
         linkedin,
         description,
       };
+      const checkEmail = await companyModel.getCompanyByEmail(email);
+
+      if (checkEmail.data.length > 0) {
+        console.log("email sudah terdaftar");
+      }
+
       if (request.file) {
         const { filename } = request.file;
         setData = { ...setData, image: filename || "" };
       }
-      const result = await companyModel.createCompany(setData);
+      await companyModel.createCompany(setData);
+
+      const getDataCompany = await companyModel.getCompanyByEmail(email);
+      delete getDataCompany.data[0].password;
       return wrapper.response(
         response,
-        result.status,
+        201,
         "Success Create Data",
-        result.data
+        getDataCompany.data
       );
     } catch (error) {
       const {
@@ -79,8 +88,6 @@ module.exports = {
   },
   updateCompany: async (request, response) => {
     try {
-      // console.log(request.params);
-      // console.log(request.body);
       const { id } = request.params;
       const {
         name,
@@ -143,9 +150,6 @@ module.exports = {
   },
   deleteCompany: async (request, response) => {
     try {
-      // 1. ngecek apakah idnya itu ada atau tidak ?
-      // 1.a. jika tidak ada maka akan mengembalikan id tidak ada di database
-      // 1.b. jika ada maka akan menjalankan proses delete
       const { id } = request.params;
       const result = await companyModel.deleteCompany(id);
 
