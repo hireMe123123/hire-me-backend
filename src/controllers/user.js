@@ -1,5 +1,7 @@
 const userModels = require("../models/usermodels");
+const cloudinary = require("../config/cloudinary");
 const wrapper = require("../utils/wrapper");
+const updateTime = require("../utils/updateTime");
 
 module.exports = {
   greetings: async (request, response) => {
@@ -84,6 +86,111 @@ module.exports = {
         error: errorDelete = null,
       } = error;
       return wrapper.response(response, status, statusText, errorDelete);
+    }
+  },
+  updateUserData: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const {
+        name,
+        profession,
+        domisili,
+        phoneNumber,
+        typeJob,
+        instagra,
+        github,
+        gitlab,
+        description,
+        updateAt,
+      } = request.body;
+
+      const isFalid = await userModels.getUserByIDs(id);
+
+      // const current = new Date();
+      // const cDate = `${current.getFullYear()}-${
+      //   current.getMonth() + 1
+      // }-${current.getDate()}`;
+      // const cTime = `${current.getHours()}:${current.getMinutes()}:${current.getSeconds()}`;
+      // const dateTime = `${cDate} ${cTime}`;
+
+      const dateTime = updateTime.dateTime();
+
+      if (isFalid.data.length < 0) {
+        return wrapper.response(response, 404, `User is not Found`, []);
+      }
+      const updateData = {
+        name,
+        profession,
+        domisili,
+        phoneNumber,
+        typeJob,
+        instagra,
+        github,
+        gitlab,
+        description,
+        updateAt: dateTime,
+      };
+      const result = await userModels.updateDataUser(id, updateData);
+      return wrapper.response(
+        response,
+        result.status,
+        "Success Update Profile",
+        result.data
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorUpdate = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorUpdate);
+    }
+  },
+  updateUserImage: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const isFalid = await userModels.getUserByIDs(id);
+
+      if (!request.file) {
+        return wrapper.response(response, 400, "Image must be filled", null);
+      }
+
+      const { filename } = request.file;
+      let newImages;
+
+      if (isFalid.data.length < 1) {
+        return wrapper.response(response, 404, `User is not Found`, []);
+      }
+
+      if (isFalid.data[0].image === null) {
+        newImages = filename;
+      }
+
+      if (isFalid.data[0].image) {
+        await cloudinary.uploader.destroy(isFalid.data[0].image);
+        newImages = filename;
+      }
+      const dateTime = updateTime.dateTime();
+      const inputData = {
+        image: newImages,
+        updateAt: dateTime,
+      };
+
+      const result = await userModels.updateImageUser(id, inputData);
+      return wrapper.response(
+        response,
+        result.status,
+        "Success Update Profile",
+        result.data
+      );
+      // if (isFalid.data)
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorUpdate = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorUpdate);
     }
   },
 };
