@@ -75,4 +75,36 @@ module.exports = {
           }
         });
     }),
+  updateDataUser: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .update([data])
+        .select(
+          "userId, name, profession, domisili,phoneNumber,typeJob,instagra, github, gitlab, description, updateAt"
+        )
+        .eq("userId", id)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updateImageUser: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .update([data])
+        .select("userId, image, createdAt, updateAt")
+        .eq("userId", id)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
 };
