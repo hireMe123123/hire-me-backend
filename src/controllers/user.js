@@ -97,11 +97,10 @@ module.exports = {
         domisili,
         phoneNumber,
         typeJob,
-        instagra,
+        instagram,
         github,
         gitlab,
         description,
-        updateAt,
       } = request.body;
 
       const isFalid = await userModels.getUserByIDs(id);
@@ -124,11 +123,11 @@ module.exports = {
         domisili,
         phoneNumber,
         typeJob,
-        instagra,
+        instagram,
         github,
         gitlab,
         description,
-        updateAt: dateTime,
+        updated_at: dateTime,
       };
       const result = await userModels.updateDataUser(id, updateData);
       return wrapper.response(
@@ -173,7 +172,7 @@ module.exports = {
       const dateTime = updateTime.dateTime();
       const inputData = {
         image: newImages,
-        updateAt: dateTime,
+        updated_at: dateTime,
       };
 
       const result = await userModels.updateImageUser(id, inputData);

@@ -47,7 +47,7 @@ module.exports = {
       supabase
         .from("user")
         .select(
-          "userId,name, profession, domisili, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, createdAt"
+          "userId,name, profession, domisili, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
         )
         .eq("userId", id)
         .then((result) => {
@@ -65,7 +65,7 @@ module.exports = {
         .delete()
         .eq("userId", userId)
         .select(
-          "userId,name, profession, domisili, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, createdAt"
+          "userId,name, profession, domicile, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
         )
         .then((result) => {
           if (result.data) {
@@ -81,7 +81,7 @@ module.exports = {
         .from("user")
         .update([data])
         .select(
-          "userId, name, profession, domisili,phoneNumber,typeJob,instagra, github, gitlab, description, updateAt"
+          "userId, name, profession, domicile ,phoneNumber,typeJob,instagram, github, gitlab, description, updated_at"
         )
         .eq("userId", id)
         .then((result) => {
@@ -97,7 +97,7 @@ module.exports = {
       supabase
         .from("user")
         .update([data])
-        .select("userId, image, createdAt, updateAt")
+        .select("userId, image, created_at, updated_at")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
