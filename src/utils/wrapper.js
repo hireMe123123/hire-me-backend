@@ -2,7 +2,7 @@ module.exports = {
   response: (response, status, msg, data, pagination) => {
     const result = {
       status,
-      message: msg,
+      msg,
       data,
       pagination,
     };
