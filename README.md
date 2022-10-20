@@ -25,11 +25,11 @@
 7. Choose HTTP Method and enter request url.(ex. localhost:3001/)
 8. You can see all the end point [here]()
 
+
 ## Set up .env file
 
 Open .env file on your favorite code editor, and copy paste this code below :
 
-```
 PORT // Server Host
 SUPABASE_URL //Database URL
 SUPABASE_KEY //Databes KEY
@@ -37,4 +37,3 @@ SUPABASE_KEY //Databes KEY
 ## License
 
 © [HireMe-App](https://github.com/hireMe123123)
-```

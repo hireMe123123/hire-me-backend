@@ -1,4 +1,4 @@
-// const bcrypt = require("bcrypt");
+const bcrypt = require("bcrypt");
 const authModel = require("../models/auth");
 const wrapper = require("../utils/wrapper");
 
@@ -7,7 +7,6 @@ module.exports = {
     try {
       const { name, email, phoneNumber, password, confirmPassword } =
         request.body;
-
       // PROSES VALIDASI PASSWORD
       if (password.length < 6) {
         return wrapper.response(
@@ -18,6 +17,7 @@ module.exports = {
         );
       }
 
+      // CONMFIRM PASSWORD
       if (password !== confirmPassword) {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
@@ -68,24 +68,6 @@ module.exports = {
         200,
         "Success Register Please Check Your Email",
         newResult
-      );
-    } catch (error) {
-      const {
-        status = 500,
-        statusText = "Internal Server Error",
-        error: errorData = null,
-      } = error;
-      return wrapper.response(response, status, statusText, errorData);
-    }
-  },
-  getAllUser: async (request, response) => {
-    try {
-      const result = await authModel.getUserByEmail();
-      return wrapper.response(
-        response,
-        result.status,
-        "Success Get User !",
-        result.data
       );
     } catch (error) {
       const {
