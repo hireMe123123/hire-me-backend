@@ -82,7 +82,7 @@ module.exports = {
         .from("user")
         .update([updateData])
         .select(
-          "userId, name, profession, domicile, phoneNumber, typeJob, instagram, github, gitlab, description, updated_at"
+          "userId, name, profession, domicile ,phoneNumber,typeJob,instagram, github, gitlab, description, updated_at"
         )
         .eq("userId", id)
         .then((result) => {
