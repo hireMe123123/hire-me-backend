@@ -14,5 +14,6 @@ Router.patch(
   uploadMiddleware.uploadImage,
   userController.updateUserImage
 );
+Router.patch("/password/:id", userController.updatePassword);
 
 module.exports = Router;

@@ -2,6 +2,7 @@ const userModels = require("../models/usermodels");
 const cloudinary = require("../config/cloudinary");
 const wrapper = require("../utils/wrapper");
 const updateTime = require("../utils/updateTime");
+const hashPass = require("../utils/hash");
 
 module.exports = {
   greetings: async (request, response) => {
@@ -183,6 +184,50 @@ module.exports = {
         result.data
       );
       // if (isFalid.data)
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorUpdate = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorUpdate);
+    }
+  },
+  updatePassword: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const { oldPassword, newPassword, confirmPassword } = request.body;
+      const isFalid = await userModels.getUserByIDs(id);
+      if (isFalid.data.length < 1) {
+        return wrapper.response(response, 404, `User is not Found`, []);
+      }
+      const getPass = await userModels.getPassWordById(id);
+      const checkPassword = hashPass.checkPassword(
+        oldPassword,
+        getPass.data[0].password
+      );
+      if (checkPassword === false) {
+        return wrapper.response(response, 401, `Please check old password`);
+      }
+      if (newPassword !== confirmPassword) {
+        return wrapper.response(
+          response,
+          401,
+          `New Password and Confirm Password did not match`
+        );
+      }
+      const hasPassword = hashPass.hashPass(confirmPassword);
+      const updatePassword = {
+        password: hasPassword,
+      };
+      const result = await userModels.updatePassword(id, updatePassword);
+
+      return wrapper.response(
+        response,
+        result.status,
+        "Success Update password",
+        result.data
+      );
     } catch (error) {
       const {
         status = 500,

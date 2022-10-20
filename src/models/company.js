@@ -28,6 +28,20 @@ module.exports = {
           }
         });
     }),
+  getCompanyByEmail: (email) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("company")
+        .select("*")
+        .eq("email", email)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
   getCompanyById: (id) =>
     new Promise((resolve, reject) => {
       supabase
