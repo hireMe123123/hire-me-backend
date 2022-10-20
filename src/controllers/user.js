@@ -94,10 +94,10 @@ module.exports = {
       const {
         name,
         profession,
-        domisili,
+        domicile,
         phoneNumber,
         typeJob,
-        instagra,
+        instagram,
         github,
         gitlab,
         description,
@@ -120,10 +120,10 @@ module.exports = {
       const updateData = {
         name,
         profession,
-        domisili,
+        domicile,
         phoneNumber,
         typeJob,
-        instagra,
+        instagram,
         github,
         gitlab,
         description,
@@ -172,14 +172,14 @@ module.exports = {
       const dateTime = updateTime.dateTime();
       const inputData = {
         image: newImages,
-        updateAt: dateTime,
+        updated_at: dateTime,
       };
 
       const result = await userModels.updateImageUser(id, inputData);
       return wrapper.response(
         response,
         result.status,
-        "Success Update Profile",
+        "Success Update Image Profile",
         result.data
       );
       // if (isFalid.data)
