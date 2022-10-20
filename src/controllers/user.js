@@ -94,7 +94,7 @@ module.exports = {
       const {
         name,
         profession,
-        domisili,
+        domicile,
         phoneNumber,
         typeJob,
         instagram,
@@ -120,7 +120,7 @@ module.exports = {
       const updateData = {
         name,
         profession,
-        domisili,
+        domicile,
         phoneNumber,
         typeJob,
         instagram,

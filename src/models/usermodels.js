@@ -5,7 +5,8 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .select("userId, name, phoneNumber, email")
+        // .select("userId, name, phoneNumber, email")
+        .select("*")
         .then((result) => {
           if (result.error) {
             reject(result);
@@ -47,7 +48,7 @@ module.exports = {
       supabase
         .from("user")
         .select(
-          "userId,name, profession, domisili, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
+          "userId,name, profession, domicile, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
         )
         .eq("userId", id)
         .then((result) => {
