@@ -4,8 +4,8 @@
 const multer = require("multer");
 const { CloudinaryStorage } = require("multer-storage-cloudinary");
 const path = require("path");
-const wrapper = require("../Utils/wrapper");
-const cloudinary = require("../Config/Cloudinary");
+const wrapper = require("../utils/wrapper");
+const cloudinary = require("../config/cloudinary");
 
 module.exports = {
   uploadImage: (request, response, next) => {
