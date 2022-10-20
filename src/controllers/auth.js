@@ -80,7 +80,6 @@ module.exports = {
         statusText = "Internal Server Error",
         error: errorData = null,
       } = error;
-      console.log(error);
       return wrapper.response(response, status, statusText, errorData);
     }
   },
@@ -268,8 +267,6 @@ module.exports = {
       }
       const { userId } = checkEmail.data[0];
       const { name } = checkEmail.data[0];
-      console.log(userId);
-      console.log(name);
 
       const OTPReset = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
@@ -277,7 +274,6 @@ module.exports = {
         lowerCaseAlphabets: false,
       });
       client.setEx(`userId:${OTPReset}`, 36000 * 48, userId);
-      console.log(OTPReset);
 
       const setMailOptions = {
         to: email,

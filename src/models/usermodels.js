@@ -5,8 +5,8 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        // .select("userId, name, phoneNumber, email")
-        .select("*")
+        .select("userId, name, phoneNumber, email")
+        // .select("*")
         .then((result) => {
           if (result.error) {
             reject(result);
@@ -99,6 +99,35 @@ module.exports = {
         .from("user")
         .update([data])
         .select("userId, image, created_at, updated_at")
+        .eq("userId", id)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getPassWordById: (id) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .select("password")
+        .eq("userId", id)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updatePassword: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .update([data])
+        .select("userId, created_at, updated_at")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
