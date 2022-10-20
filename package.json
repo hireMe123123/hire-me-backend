@@ -4,8 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "node index.js",
-    "test": "npx nodemon index.js",
+    "start": "npx nodemon ./src/app.js",
     "generateKeys": "node src/utils/generateKeys"
   },
   "author": "",
