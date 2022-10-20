@@ -101,7 +101,6 @@ module.exports = {
         github,
         gitlab,
         description,
-        updateAt,
       } = request.body;
 
       const isFalid = await userModels.getUserByIDs(id);
@@ -128,7 +127,7 @@ module.exports = {
         github,
         gitlab,
         description,
-        updateAt: dateTime,
+        updated_at: dateTime,
       };
       const result = await userModels.updateDataUser(id, updateData);
       return wrapper.response(
