@@ -21,13 +21,10 @@
     "helmet": "^6.0.0",
     "jsonwebtoken": "^8.5.1",
     "morgan": "^1.10.0",
-<<<<<<< HEAD
     "multer": "^1.4.5-lts.1",
     "multer-storage-cloudinary": "^4.0.0",
-=======
     "otp-generator": "^4.0.0",
     "redis": "^4.3.1",
->>>>>>> 9e92a2c013bfc0be182a25ecb65cda3b7f89e400
     "xss-clean": "^0.1.1"
   },
   "devDependencies": {
