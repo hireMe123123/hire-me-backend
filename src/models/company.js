@@ -56,4 +56,18 @@ module.exports = {
           }
         });
     }),
+  deleteCompany: (id) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("company")
+        .delete()
+        .eq("companyId", id)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
 };
