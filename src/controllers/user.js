@@ -102,6 +102,7 @@ module.exports = {
         github,
         gitlab,
         description,
+        skill,
       } = request.body;
 
       const isFalid = await userModels.getUserByIDs(id);
@@ -131,11 +132,25 @@ module.exports = {
         updated_at: dateTime,
       };
       const result = await userModels.updateDataUser(id, updateData);
+      const { userId } = result.data[0];
+
+      const resultUserSkill = await Promise.all(
+        skill.map(async (e) => {
+          try {
+            await userModels.createUserSkill(userId, e);
+            return e;
+          } catch (error) {
+            return error.error;
+          }
+        })
+      );
+      const finalResult = { ...result.data[0], skill: resultUserSkill };
+
       return wrapper.response(
         response,
         result.status,
         "Success Update Profile",
-        result.data
+        finalResult
       );
     } catch (error) {
       const {
@@ -235,6 +250,34 @@ module.exports = {
         error: errorUpdate = null,
       } = error;
       return wrapper.response(response, status, statusText, errorUpdate);
+    }
+  },
+  getSkillUser: async (request, response) => {
+    try {
+      const { userId } = request.params;
+      const result = await userModels.getSkillUser(userId);
+      if (result.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `Skill User By User Id ${userId} Not Found`,
+          []
+        );
+      }
+
+      return wrapper.response(
+        response,
+        result.status,
+        "Success Get Skill User",
+        result.data
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
     }
   },
 };
