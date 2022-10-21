@@ -6,19 +6,22 @@ module.exports = {
   authentication: async (request, response, next) => {
     try {
       const token = request.headers.authorization;
-
       if (!token) {
         return wrapper.response(response, 403, "Please Login First", null);
       }
 
-      jwt.verify(token, process.env.ACCESS_KEYS, (error, result) => {
-        if (error) {
-          return wrapper.response(response, 403, error.message, null);
-        }
+      jwt.verify(
+        token.split(" ")[1],
+        process.env.ACCESS_KEYS,
+        (error, result) => {
+          if (error) {
+            return wrapper.response(response, 403, error.message, null);
+          }
 
-        request.decodeToken = result;
-        return next();
-      });
+          request.decodeToken = result;
+          return next();
+        }
+      );
     } catch (error) {
       return error.error;
     }
