@@ -24,12 +24,34 @@ module.exports = {
   },
   getAllDataUser: async (request, response) => {
     try {
-      const result = await userModels.getAllUsers();
+      let { page, limit, typeJob } = request.query;
+
+      page = +page || 1;
+      limit = +limit || 5;
+
+      if (typeJob === "") {
+        typeJob = "freelance";
+      }
+
+      const totalData = await userModels.getCountDataUser();
+
+      const totalPage = Math.ceil(totalData / limit);
+
+      const pagination = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+      };
+      const offset = page * limit - limit;
+
+      const result = await userModels.getAllUsers(offset, limit, typeJob);
       return wrapper.response(
         response,
         result.status,
         "Success get data user",
-        result.data
+        result.data,
+        pagination
       );
     } catch (error) {
       const {

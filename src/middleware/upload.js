@@ -12,7 +12,7 @@ module.exports = {
     const storage = new CloudinaryStorage({
       cloudinary,
       params: {
-        folder: "EventsImage",
+        folder: "HireMe",
       },
     });
     const largeSize = 500000;

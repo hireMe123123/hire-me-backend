@@ -5,8 +5,8 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("userSkill")
-        .select("userSkillId, user(name), skill(skillName)")
-        .eq("userid", id)
+        .select("*")
+        .eq("skillId", id)
         .then((result) => {
           if (result.data) {
             resolve(result);
@@ -15,27 +15,96 @@ module.exports = {
           }
         });
     }),
-  getCountDataSkill: () =>
+  inputDataSkill: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("userSkill")
-        .select("*", { count: "exact" })
+        .from("skill")
+        .insert([data])
         .then((result) => {
-          if (!result.error) {
-            resolve(result.count);
+          if (result.data) {
+            resolve(result);
           } else {
             reject(result);
           }
         });
     }),
-  getAllSkill: (offset, limit, searchName, column, typeJob) =>
+  inputDataUserSkill: (data) =>
     new Promise((resolve, reject) => {
       supabase
         .from("userSkill")
-        .select("userSkillId, user(name, typeJob), skill(skillName)")
-        .range(offset, offset + limit - 1)
-        .ilike(`${column}`, `%${searchName}%`)
-        .eq("typeJob", typeJob)
+        .insert([data])
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getDataSkill: (userId, skillId) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .select("*")
+        .eq("userId", userId)
+        .eq("skillId", skillId)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  deleteUserSkill: (userSkillid) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .delete()
+        .eq("userSkillId", userSkillid)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  deleteSkill: (skillId) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("skill")
+        .delete()
+        .eq("skillId", skillId)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updateSkillName: (skillid, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("skill")
+        .update([data])
+        .select("*")
+        .eq("skillId", skillid)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getDataSkillName: (skillName) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .select("userSkillId, skill(skillName), user(userId)")
+        .textSearch("skill.skillName", `${skillName}`)
         .then((result) => {
           if (result.data) {
             resolve(result);
