@@ -1,10 +1,11 @@
+/* eslint-disable consistent-return */
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const otpGenerator = require("otp-generator");
 const client = require("../config/redis");
 const authCompanyModel = require("../models/authCompany");
 const wrapper = require("../utils/wrapper");
-const { sendMail } = require("../utils/mail");
+const { sendMail, sendMailToResetPassword } = require("../utils/mail");
 
 module.exports = {
   register: async (request, response) => {
@@ -151,6 +152,184 @@ module.exports = {
         refreshToken,
       };
       return wrapper.response(response, 200, "Success Login", newResult);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  logout: async (request, response) => {
+    try {
+      let token = request.headers.authorization;
+      const { refreshtoken } = request.headers;
+      [token] = [token.split(" ")[1]];
+
+      client.setEx(`accessToken:${token}`, 3600 * 48, token);
+      client.setEx(`refreshoken:${refreshtoken}`, 3600 * 48, refreshtoken);
+
+      return wrapper.response(response, 200, "Success Logout", null);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  refresh: async (request, response) => {
+    try {
+      const { refreshtoken } = request.headers;
+      if (!refreshtoken) {
+        return wrapper.response(
+          response,
+          400,
+          "Request Token Must Be Filled",
+          null
+        );
+      }
+
+      const checkTokenBlacklist = await client.get(
+        `refreshtoken:${refreshtoken}`
+      );
+
+      if (checkTokenBlacklist) {
+        return wrapper.response(
+          response,
+          403,
+          "Your Token is Destroyed Pleease Login Again",
+          null
+        );
+      }
+
+      let payload;
+      let token;
+      let newRefreshtoken;
+
+      jwt.verify(refreshtoken, process.env.REFRESH_KEYS, (error, result) => {
+        if (error) {
+          return wrapper.response(response, 401, error.message, null);
+        }
+        payload = {
+          companyId: result.companyId,
+          role: result.role,
+        };
+
+        token = jwt.sign(payload, process.env.ACCESS_KEYS, {
+          expiresIn: "24h",
+        });
+
+        newRefreshtoken = jwt.sign(payload, process.env.REFRESH_KEYS, {
+          expiresIn: "36h",
+        });
+
+        client.setEx(`refreshtoken:${refreshtoken}`, 3600 * 36, refreshtoken);
+        const newResult = {
+          companyId: payload.companyId,
+          token,
+          refreshtoken: newRefreshtoken,
+        };
+
+        return wrapper.response(
+          response,
+          200,
+          "Succes Refresh Token",
+          newResult
+        );
+      });
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  forgotPassword: async (request, response) => {
+    try {
+      const { email } = request.body;
+      const checkEmail = await authCompanyModel.getCompanyByEmail(email);
+
+      if (checkEmail.length < 1) {
+        return wrapper.response(response, 400, "Email Not Registered", null);
+      }
+
+      const { companyId } = checkEmail.data[0];
+      const { name } = checkEmail.data[0];
+
+      const OTPReset = otpGenerator.generate(6, {
+        upperCaseAlphabets: false,
+        specialChars: false,
+        lowerCaseAlphabets: false,
+      });
+      client.setEx(`companyId:${OTPReset}`, 36000 * 48, companyId);
+
+      const setMailOptions = {
+        to: email,
+        name,
+        subject: "Email Verification !",
+        template: "verificationResetPassword.html",
+        buttonUrl: `http://localhost:3001/api/authCompany/resetPassword/${OTPReset}`,
+      };
+
+      await sendMailToResetPassword(setMailOptions);
+      const result = [{ email: checkEmail.data[0].email }];
+
+      return wrapper.response(
+        response,
+        200,
+        "Process Success Please Check Your Email",
+        result
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  resetPassword: async (request, response) => {
+    try {
+      const { OTPReset } = request.params;
+      const { newPassword, confirmPassword } = request.body;
+
+      const companyId = await client.get(`companyId:${OTPReset}`);
+
+      if (!companyId) {
+        return wrapper.response(response, 400, "Wrong Input OTPReset", null);
+      }
+
+      const checkId = await authCompanyModel.getCompanyById(companyId);
+      if (checkId.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `Update By Id ${companyId} Not Found`,
+          []
+        );
+      }
+
+      if (newPassword !== confirmPassword) {
+        return wrapper.response(response, 400, "Password Not Match", null);
+      }
+
+      const hash = bcrypt.hashSync(newPassword, 10);
+      const setData = {
+        password: hash,
+        updated_at: "now()",
+      };
+      await authCompanyModel.updateCompany(companyId, setData);
+
+      const company = await authCompanyModel.getCompanyById(companyId);
+      const result = [{ companyId: company.data[0].companyId }];
+
+      return wrapper.response(response, 200, "Success Reset Password ", result);
     } catch (error) {
       const {
         status = 500,
