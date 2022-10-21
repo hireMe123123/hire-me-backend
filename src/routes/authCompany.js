@@ -11,5 +11,6 @@ Router.post("/logout", authCompanyController.logout);
 Router.post("/refresh", authCompanyController.refresh);
 Router.post("/forgotPassword", authCompanyController.forgotPassword);
 Router.patch("/resetPassword/:OTPReset", authCompanyController.resetPassword);
+Router.post("/hire/:userId", authCompanyController.hire);
 
 module.exports = Router;

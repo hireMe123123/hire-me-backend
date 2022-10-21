@@ -5,7 +5,12 @@ const otpGenerator = require("otp-generator");
 const client = require("../config/redis");
 const authCompanyModel = require("../models/authCompany");
 const wrapper = require("../utils/wrapper");
-const { sendMail, sendMailToResetPassword } = require("../utils/mail");
+const {
+  sendMail,
+  sendMailToResetPassword,
+  hiredGreetings,
+} = require("../utils/mail");
+const userModel = require("../models/usermodels");
 
 module.exports = {
   register: async (request, response) => {
@@ -337,6 +342,47 @@ module.exports = {
       const result = [{ companyId: company.data[0].companyId }];
 
       return wrapper.response(response, 200, "Success Reset Password ", result);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  hire: async (request, response) => {
+    try {
+      const { userId } = request.params;
+      const checkUserId = await userModel.getUserByIDs(userId);
+
+      if (checkUserId.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `user with id: ${userId} Not Found`,
+          []
+        );
+      }
+
+      const { name } = checkUserId.data[0];
+      const setMailOptions = {
+        to: checkUserId.data[0].email,
+        name,
+        subject: "congratulations !",
+        template: "greetings.html",
+      };
+
+      await hiredGreetings(setMailOptions);
+
+      const newResult = [{ userId: checkUserId.data[0].userId }];
+
+      return wrapper.response(
+        response,
+        200,
+        `Success send Email to user id : ${userId}`,
+        newResult
+      );
     } catch (error) {
       const {
         status = 500,

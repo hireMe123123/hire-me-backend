@@ -60,7 +60,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("company")
-        .update(data)
+        .update([data])
         .eq("companyId", id)
         .then((result) => {
           if (!result.error) {
