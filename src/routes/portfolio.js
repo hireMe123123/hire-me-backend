@@ -15,7 +15,7 @@ Router.post(
 
 Router.get(
   "/user/:userId",
-  authMiddleware.authentication,
+  // authMiddleware.authentication,
   portfolioController.getPortfolioByUserId
 );
 Router.get(
