@@ -152,4 +152,31 @@ module.exports = {
           }
         });
     }),
+  createUserSkill: (userId, skill) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .insert([{ userId, skill }])
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getSkillUser: (userId) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .select(`userId, name,  userSkill ( skill )`)
+        .eq("userId", userId)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
 };
