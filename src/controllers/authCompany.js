@@ -10,8 +10,15 @@ const { sendMail, sendMailToResetPassword } = require("../utils/mail");
 module.exports = {
   register: async (request, response) => {
     try {
-      const { name, email, field, phonenumber, password, confirmPassword } =
-        request.body;
+      const {
+        name,
+        email,
+        field,
+        phonenumber,
+        password,
+        confirmPassword,
+        companyName,
+      } = request.body;
 
       const checkEmail = await authCompanyModel.getCompanyByEmail(email);
       if (checkEmail.data.length > 0) {
@@ -39,6 +46,7 @@ module.exports = {
         password: hash,
         phonenumber,
         field,
+        companyName,
       };
 
       await authCompanyModel.register(setData);
@@ -77,7 +85,6 @@ module.exports = {
         statusText = "Internal Server Error",
         error: errorData = null,
       } = error;
-      console.log(error);
       return wrapper.response(response, status, statusText, errorData);
     }
   },
@@ -114,10 +121,10 @@ module.exports = {
 
       const checkEmail = await authCompanyModel.getCompanyByEmail(email);
 
+      console.log(email);
       if (checkEmail.data.length < 1) {
-        return wrapper.response(response, 404, "Email Not Registed", null);
+        return wrapper.response(response, 404, "Email Not Registered", null);
       }
-
       const isValid = await bcrypt
         .compare(password, checkEmail.data[0].password)
         .then((result) => result);
