@@ -6,6 +6,7 @@ module.exports = {
       supabase
         .from("user")
         .select("userId, name, phoneNumber, email")
+        // .select("*")
         .then((result) => {
           if (result.error) {
             reject(result);
@@ -47,7 +48,7 @@ module.exports = {
       supabase
         .from("user")
         .select(
-          "userId,name, profession, domisili, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, createdAt"
+          "userId,name, profession, domicile, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
         )
         .eq("userId", id)
         .then((result) => {
@@ -65,7 +66,7 @@ module.exports = {
         .delete()
         .eq("userId", userId)
         .select(
-          "userId,name, profession, domisili, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, createdAt"
+          "userId,name, profession, domicile, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
         )
         .then((result) => {
           if (result.data) {
@@ -75,13 +76,13 @@ module.exports = {
           }
         });
     }),
-  updateDataUser: (id, data) =>
+  updateDataUser: (id, updateData) =>
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .update([data])
+        .update([updateData])
         .select(
-          "userId, name, profession, domisili,phoneNumber,typeJob,instagra, github, gitlab, description, updateAt"
+          "userId, name, profession, domicile ,phoneNumber,typeJob,instagram, github, gitlab, description, updated_at"
         )
         .eq("userId", id)
         .then((result) => {
@@ -97,7 +98,36 @@ module.exports = {
       supabase
         .from("user")
         .update([data])
-        .select("userId, image, createdAt, updateAt")
+        .select("userId, image, created_at, updated_at")
+        .eq("userId", id)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getPassWordById: (id) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .select("password")
+        .eq("userId", id)
+        .then((result) => {
+          if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updatePassword: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .update([data])
+        .select("userId, created_at, updated_at")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {

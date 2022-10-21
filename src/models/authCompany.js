@@ -1,11 +1,12 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  getAllUser: () =>
+  getCompanyByEmail: (email) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("company")
         .select("*")
+        .eq("email", email)
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -14,24 +15,10 @@ module.exports = {
           }
         });
     }),
-  getUserById: (userId) =>
+  register: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
-        .select("*")
-        .eq("userId", userId)
-        .then((result) => {
-          if (!result.error) {
-            resolve(result);
-          } else {
-            reject(result);
-          }
-        });
-    }),
-  createUser: (data) =>
-    new Promise((resolve, reject) => {
-      supabase
-        .from("user")
+        .from("company")
         .insert([data])
         .then((result) => {
           if (!result.error) {
@@ -41,12 +28,12 @@ module.exports = {
           }
         });
     }),
-  updateUser: (id, data) =>
+  updateCompany: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
-        .update(data)
-        .eq("userId", id)
+        .from("company")
+        .update([data])
+        .eq("companyId", id)
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -55,26 +42,12 @@ module.exports = {
           }
         });
     }),
-  deleteUser: (id) =>
+  getCompanyById: (companyId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
-        .delete()
-        .eq("userId", id)
-        .then((result) => {
-          if (!result.error) {
-            resolve(result);
-          } else {
-            reject(result);
-          }
-        });
-    }),
-  updateImageUser: (id, data) =>
-    new Promise((resolve, reject) => {
-      supabase
-        .from("user")
-        .update(data)
-        .eq("userId", id)
+        .from("company")
+        .select("*")
+        .eq("companyId", companyId)
         .then((result) => {
           if (!result.error) {
             resolve(result);

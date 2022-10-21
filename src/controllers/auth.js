@@ -4,6 +4,7 @@ const otpGenerator = require("otp-generator");
 const client = require("../config/redis");
 const authModel = require("../models/auth");
 const wrapper = require("../utils/wrapper");
+const { sendMail, sendMailToResetPassword } = require("../utils/mail");
 
 module.exports = {
   register: async (request, response) => {
@@ -54,6 +55,18 @@ module.exports = {
 
       client.setEx(`OTP:${OTP}`, 3600, OTP);
       client.setEx(`userId:${OTP}`, 3600 * 48, user.data[0].userId);
+
+      // SEND EMAIL ACTIVATION
+      const setMailOptions = {
+        to: email,
+        name,
+        subject: "Email Verification !",
+        template: "verificationEmail.html",
+        buttonUrl: `http://localhost:3001/api/auth/verify/${OTP}`,
+        OTP,
+      };
+
+      await sendMail(setMailOptions);
 
       return wrapper.response(
         response,
@@ -253,7 +266,7 @@ module.exports = {
         return wrapper.response(response, 400, "Email Not Registered", null);
       }
       const { userId } = checkEmail.data[0];
-      // const { name } = checkEmail.data[0];
+      const { name } = checkEmail.data[0];
 
       const OTPReset = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
@@ -261,17 +274,16 @@ module.exports = {
         lowerCaseAlphabets: false,
       });
       client.setEx(`userId:${OTPReset}`, 36000 * 48, userId);
-      console.log(OTPReset);
 
-      // const setMailOptions = {
-      //   to: email,
-      //   name: username,
-      //   subject: "Email Verification !",
-      //   template: "verificationResetPassword.html",
-      //   buttonUrl: `http://localhost:3001/api/auth/resetPassword/${OTPReset}`,
-      // };
+      const setMailOptions = {
+        to: email,
+        name,
+        subject: "Email Verification !",
+        template: "verificationResetPassword.html",
+        buttonUrl: `http://localhost:3001/api/auth/resetPassword/${OTPReset}`,
+      };
 
-      // await sendMailToResetPassword(setMailOptions);
+      await sendMailToResetPassword(setMailOptions);
       const result = [{ email: checkEmail.data[0].email }];
 
       return wrapper.response(
