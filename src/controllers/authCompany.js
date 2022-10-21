@@ -30,6 +30,8 @@ module.exports = {
       if (password !== confirmPassword) {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
+      // PROSES ENCRYPT PASSWORD
+      const hash = bcrypt.hashSync(password, 10);
 
       const hash = bcrypt.hashSync(password, 10);
 
