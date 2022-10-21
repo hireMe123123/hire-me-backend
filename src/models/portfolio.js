@@ -32,9 +32,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("portofolio")
-        .select(
-          `user(userId),portofolio(portofolioId,nameProject,projectRepo,image)`
-        )
+        .select(`*`)
         .eq("portofolioId", portofolioId)
         .then((result) => {
           if (!result.error) {

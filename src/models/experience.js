@@ -32,9 +32,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("experience")
-        .select(
-          `user(userId),experience(experienceId,nameProject,projectRepo,image)`
-        )
+        .select(`*`)
         .eq("experienceId", experienceId)
         .then((result) => {
           if (!result.error) {

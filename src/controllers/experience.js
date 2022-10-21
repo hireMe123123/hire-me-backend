@@ -8,9 +8,6 @@ module.exports = {
     try {
       const { userId, company, position, entryDate, exitDate, description } =
         request.body;
-      if (!request.file) {
-        return wrapper.response(response, 404, "Image Must Be Filled");
-      }
 
       const setExperience = {
         userId,
