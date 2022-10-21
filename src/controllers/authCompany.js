@@ -126,7 +126,6 @@ module.exports = {
 
       const checkEmail = await authCompanyModel.getCompanyByEmail(email);
 
-      console.log(email);
       if (checkEmail.data.length < 1) {
         return wrapper.response(response, 404, "Email Not Registered", null);
       }
