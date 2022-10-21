@@ -1,6 +1,7 @@
 const portfolioModel = require("../models/portfolio");
 const wrapper = require("../utils/wrapper");
 const cloudinary = require("../config/cloudinary");
+const userModel = require("../models/usermodels");
 // const client = require("../config/redis");
 
 module.exports = {
@@ -39,6 +40,13 @@ module.exports = {
     try {
       const { userId } = request.params;
       const result = await portfolioModel.getPortfolioByUserId(userId);
+      const dataUser = await userModel.getUserByIDs(userId);
+      const newResult = {
+        userId: dataUser.data[0].userId,
+        name: dataUser.data[0].name,
+        data: result.data,
+      };
+      console.log(newResult);
       if (result.data.length < 1) {
         return wrapper.response(
           response,
@@ -51,7 +59,7 @@ module.exports = {
         response,
         result.status,
         "Success Get Portfolio By User Id",
-        result.data
+        newResult
       );
     } catch (error) {
       const {
