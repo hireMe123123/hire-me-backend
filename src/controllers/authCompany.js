@@ -33,8 +33,6 @@ module.exports = {
       // PROSES ENCRYPT PASSWORD
       const hash = bcrypt.hashSync(password, 10);
 
-      const hash = bcrypt.hashSync(password, 10);
-
       const setData = {
         name,
         email,
