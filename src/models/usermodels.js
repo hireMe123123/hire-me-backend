@@ -1,12 +1,27 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  getAllUsers: () =>
+  getCountDataUser: () =>
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .select("userId, name, phoneNumber, email")
-        // .select("*")
+        .select("*", { count: "exact" })
+        .then((result) => {
+          if (result.data) {
+            resolve(result.count);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getAllUsers: (offset, limit, typeJob) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        // .select("userId, name, phoneNumber, email")
+        .select("*")
+        .range(offset, offset + limit - 1)
+        .ilike("typeJob", `%${typeJob}%`)
         .then((result) => {
           if (result.error) {
             reject(result);
