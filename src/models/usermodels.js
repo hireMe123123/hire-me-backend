@@ -14,21 +14,25 @@ module.exports = {
           }
         });
     }),
-  getAllUsers: (offset, limit, typeJob) =>
+  getAllUsers: (offset, limit, typeJob, skills) =>
     new Promise((resolve, reject) => {
-      supabase
-        .from("users")
-        // .select("userId, name, phoneNumber, email")
-        .select("*,userSkill(skill)")
+      const query = supabase
+        .from("user_with_skills")
+        .select("*")
         .range(offset, offset + limit - 1)
-        .ilike("typeJob", `%${typeJob}%`)
-        .then((result) => {
-          if (result.error) {
-            reject(result);
-          } else {
-            resolve(result);
-          }
-        });
+        .order("totalskills", { ascending: false })
+        .ilike("skills", `%${skills}%`);
+      if (typeJob) {
+        query.eq("typeJob", typeJob);
+      }
+
+      query.then((result) => {
+        if (result.error) {
+          reject(result);
+        } else {
+          resolve(result);
+        }
+      });
     }),
   checkDataUser: (email) =>
     new Promise((resolve, reject) => {
