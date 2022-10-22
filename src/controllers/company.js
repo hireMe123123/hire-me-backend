@@ -1,5 +1,6 @@
 const companyModel = require("../models/company");
 const wrapper = require("../utils/wrapper");
+const cloudinary = require("../config/cloudinary");
 
 module.exports = {
   createCompany: async (request, response) => {
@@ -90,11 +91,10 @@ module.exports = {
     try {
       const { id } = request.params;
       const {
-        name,
+        companyName,
         field,
         location,
         phonenumber,
-        image,
         email,
         instagram,
         linkedin,
@@ -112,26 +112,27 @@ module.exports = {
         );
       }
 
-      // let image;
-      // if (request.file) {
-      //   const { filename } = request.file;
-      //   image = filename;
-      //   cloudinary.uploader.destroy(checkId.data[0].image, () => {});
-      // }
+      let image;
+      if (request.file) {
+        const { filename } = request.file;
+        image = filename;
+        cloudinary.uploader.destroy(checkId.data[0].image, () => {});
+      }
 
       const setData = {
-        name,
+        companyName,
         field,
         location,
         phonenumber,
-        image,
         email,
         instagram,
         linkedin,
         description,
+        image,
       };
 
-      const result = await companyModel.updateCompany(id, setData);
+      await companyModel.updateCompany(id, setData);
+      const result = await companyModel.getCompanyById(id);
 
       return wrapper.response(
         response,

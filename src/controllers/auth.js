@@ -32,12 +32,12 @@ module.exports = {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
       // PROSES ENCRYPT PASSWORD
-      // const hash = bcrypt.hashSync(password, 10);
+      const hash = bcrypt.hashSync(password, 10);
 
       const setData = {
         name,
         email,
-        // password: hash,
+        password: hash,
         phoneNumber,
       };
 
@@ -75,11 +75,13 @@ module.exports = {
         newResult
       );
     } catch (error) {
+      console.log(error);
       const {
         status = 500,
         statusText = "Internal Server Error",
         error: errorData = null,
       } = error;
+
       return wrapper.response(response, status, statusText, errorData);
     }
   },

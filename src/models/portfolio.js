@@ -1,25 +1,11 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  // updateCompany: (id, data) =>
-  //   new Promise((resolve, reject) => {
-  //     supabase
-  //       .from("company")
-  //       .update(data)
-  //       .eq("id", id)
-  //       .then((result) => {
-  //         if (!result.error) {
-  //           resolve(result);
-  //         } else {
-  //           reject(result);
-  //         }
-  //       });
-  //   }),
-  createCompany: (data) =>
+  createPortfolio: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
-        .insert([data]) // insert([{name: "Tea", price: 5000}])
+        .from("portofolio")
+        .insert([data])
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -28,12 +14,12 @@ module.exports = {
           }
         });
     }),
-  getCompanyByEmail: (email) =>
+  getPortfolioByUserId: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
+        .from("portofolio")
         .select("*")
-        .eq("email", email)
+        .eq("userId", userId)
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -42,12 +28,12 @@ module.exports = {
           }
         });
     }),
-  getCompanyById: (id) =>
+  getPortfolioById: (portofolioId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
-        .select("*")
-        .eq("companyId", id)
+        .from("portofolio")
+        .select(`*`)
+        .eq("portofolioId", portofolioId)
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -56,26 +42,26 @@ module.exports = {
           }
         });
     }),
-  updateCompany: (id, data) =>
+  deletePortfolio: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
-        .update([data])
-        .eq("companyId", id)
-        .then((result) => {
-          if (!result.error) {
-            resolve(result);
-          } else {
-            reject(result);
-          }
-        });
-    }),
-  deleteCompany: (id) =>
-    new Promise((resolve, reject) => {
-      supabase
-        .from("company")
+        .from("portofolio")
         .delete()
-        .eq("companyId", id)
+        .eq("portofolioId", id)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updatePortfolio: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("portofolio")
+        .update(data)
+        .eq("portofolioId", id)
         .then((result) => {
           if (!result.error) {
             resolve(result);

@@ -1,16 +1,29 @@
+/* eslint-disable consistent-return */
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const otpGenerator = require("otp-generator");
 const client = require("../config/redis");
 const authCompanyModel = require("../models/authCompany");
 const wrapper = require("../utils/wrapper");
-const { sendMail } = require("../utils/mail");
+const {
+  sendMail,
+  sendMailToResetPassword,
+  hiredGreetings,
+} = require("../utils/mail");
+const userModel = require("../models/usermodels");
 
 module.exports = {
   register: async (request, response) => {
     try {
-      const { name, email, field, phonenumber, password, confirmPassword } =
-        request.body;
+      const {
+        name,
+        email,
+        field,
+        phonenumber,
+        password,
+        confirmPassword,
+        companyName,
+      } = request.body;
 
       const checkEmail = await authCompanyModel.getCompanyByEmail(email);
       if (checkEmail.data.length > 0) {
@@ -29,13 +42,16 @@ module.exports = {
       if (password !== confirmPassword) {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
+      // PROSES ENCRYPT PASSWORD
+      const hash = bcrypt.hashSync(password, 10);
 
       const setData = {
         name,
         email,
-        // password: hash,
+        password: hash,
         phonenumber,
         field,
+        companyName,
       };
 
       await authCompanyModel.register(setData);
@@ -74,7 +90,6 @@ module.exports = {
         statusText = "Internal Server Error",
         error: errorData = null,
       } = error;
-      console.log(error);
       return wrapper.response(response, status, statusText, errorData);
     }
   },
@@ -112,9 +127,8 @@ module.exports = {
       const checkEmail = await authCompanyModel.getCompanyByEmail(email);
 
       if (checkEmail.data.length < 1) {
-        return wrapper.response(response, 404, "Email Not Registed", null);
+        return wrapper.response(response, 404, "Email Not Registered", null);
       }
-
       const isValid = await bcrypt
         .compare(password, checkEmail.data[0].password)
         .then((result) => result);
@@ -149,6 +163,225 @@ module.exports = {
         refreshToken,
       };
       return wrapper.response(response, 200, "Success Login", newResult);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  logout: async (request, response) => {
+    try {
+      let token = request.headers.authorization;
+      const { refreshtoken } = request.headers;
+      [token] = [token.split(" ")[1]];
+
+      client.setEx(`accessToken:${token}`, 3600 * 48, token);
+      client.setEx(`refreshoken:${refreshtoken}`, 3600 * 48, refreshtoken);
+
+      return wrapper.response(response, 200, "Success Logout", null);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  refresh: async (request, response) => {
+    try {
+      const { refreshtoken } = request.headers;
+      if (!refreshtoken) {
+        return wrapper.response(
+          response,
+          400,
+          "Request Token Must Be Filled",
+          null
+        );
+      }
+
+      const checkTokenBlacklist = await client.get(
+        `refreshtoken:${refreshtoken}`
+      );
+
+      if (checkTokenBlacklist) {
+        return wrapper.response(
+          response,
+          403,
+          "Your Token is Destroyed Pleease Login Again",
+          null
+        );
+      }
+
+      let payload;
+      let token;
+      let newRefreshtoken;
+
+      jwt.verify(refreshtoken, process.env.REFRESH_KEYS, (error, result) => {
+        if (error) {
+          return wrapper.response(response, 401, error.message, null);
+        }
+        payload = {
+          companyId: result.companyId,
+          role: result.role,
+        };
+
+        token = jwt.sign(payload, process.env.ACCESS_KEYS, {
+          expiresIn: "24h",
+        });
+
+        newRefreshtoken = jwt.sign(payload, process.env.REFRESH_KEYS, {
+          expiresIn: "36h",
+        });
+
+        client.setEx(`refreshtoken:${refreshtoken}`, 3600 * 36, refreshtoken);
+        const newResult = {
+          companyId: payload.companyId,
+          token,
+          refreshtoken: newRefreshtoken,
+        };
+
+        return wrapper.response(
+          response,
+          200,
+          "Succes Refresh Token",
+          newResult
+        );
+      });
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  forgotPassword: async (request, response) => {
+    try {
+      const { email } = request.body;
+      const checkEmail = await authCompanyModel.getCompanyByEmail(email);
+
+      if (checkEmail.length < 1) {
+        return wrapper.response(response, 400, "Email Not Registered", null);
+      }
+
+      const { companyId } = checkEmail.data[0];
+      const { name } = checkEmail.data[0];
+
+      const OTPReset = otpGenerator.generate(6, {
+        upperCaseAlphabets: false,
+        specialChars: false,
+        lowerCaseAlphabets: false,
+      });
+      client.setEx(`companyId:${OTPReset}`, 36000 * 48, companyId);
+
+      const setMailOptions = {
+        to: email,
+        name,
+        subject: "Email Verification !",
+        template: "verificationResetPassword.html",
+        buttonUrl: `http://localhost:3001/api/authCompany/resetPassword/${OTPReset}`,
+      };
+
+      await sendMailToResetPassword(setMailOptions);
+      const result = [{ email: checkEmail.data[0].email }];
+
+      return wrapper.response(
+        response,
+        200,
+        "Process Success Please Check Your Email",
+        result
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  resetPassword: async (request, response) => {
+    try {
+      const { OTPReset } = request.params;
+      const { newPassword, confirmPassword } = request.body;
+
+      const companyId = await client.get(`companyId:${OTPReset}`);
+
+      if (!companyId) {
+        return wrapper.response(response, 400, "Wrong Input OTPReset", null);
+      }
+
+      const checkId = await authCompanyModel.getCompanyById(companyId);
+      if (checkId.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `Update By Id ${companyId} Not Found`,
+          []
+        );
+      }
+
+      if (newPassword !== confirmPassword) {
+        return wrapper.response(response, 400, "Password Not Match", null);
+      }
+
+      const hash = bcrypt.hashSync(newPassword, 10);
+      const setData = {
+        password: hash,
+        updated_at: "now()",
+      };
+      await authCompanyModel.updateCompany(companyId, setData);
+
+      const company = await authCompanyModel.getCompanyById(companyId);
+      const result = [{ companyId: company.data[0].companyId }];
+
+      return wrapper.response(response, 200, "Success Reset Password ", result);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  hire: async (request, response) => {
+    try {
+      const { userId } = request.params;
+      const checkUserId = await userModel.getUserByIDs(userId);
+
+      if (checkUserId.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `user with id: ${userId} Not Found`,
+          []
+        );
+      }
+
+      const { name } = checkUserId.data[0];
+      const setMailOptions = {
+        to: checkUserId.data[0].email,
+        name,
+        subject: "congratulations !",
+        template: "greetings.html",
+      };
+
+      await hiredGreetings(setMailOptions);
+
+      const newResult = [{ userId: checkUserId.data[0].userId }];
+
+      return wrapper.response(
+        response,
+        200,
+        `Success send Email to user id : ${userId}`,
+        newResult
+      );
     } catch (error) {
       const {
         status = 500,

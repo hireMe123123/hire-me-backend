@@ -1,12 +1,27 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  getAllUsers: () =>
+  getCountDataUser: () =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
-        .select("userId, name, phoneNumber, email")
-        // .select("*")
+        .from("users")
+        .select("*", { count: "exact" })
+        .then((result) => {
+          if (result.data) {
+            resolve(result.count);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getAllUsers: (offset, limit, typeJob) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("users")
+        // .select("userId, name, phoneNumber, email")
+        .select("*,userSkill(skill)")
+        .range(offset, offset + limit - 1)
+        .ilike("typeJob", `%${typeJob}%`)
         .then((result) => {
           if (result.error) {
             reject(result);
@@ -18,7 +33,7 @@ module.exports = {
   checkDataUser: (email) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("userId, email, password")
         .eq("email", email)
         .then((result) => {
@@ -32,7 +47,7 @@ module.exports = {
   registerUser: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .insert([data])
         .select("userId")
         .then((result) => {
@@ -46,10 +61,8 @@ module.exports = {
   getUserByIDs: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
-        .select(
-          "userId,name, profession, domicile, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
-        )
+        .from("users")
+        .select("*")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
@@ -62,7 +75,7 @@ module.exports = {
   deleteUser: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .delete()
         .eq("userId", userId)
         .select(
@@ -79,11 +92,9 @@ module.exports = {
   updateDataUser: (id, updateData) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([updateData])
-        .select(
-          "userId, name, profession, domicile ,phoneNumber,typeJob,instagram, github, gitlab, description, updated_at"
-        )
+        .select("*")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
@@ -96,7 +107,7 @@ module.exports = {
   updateImageUser: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([data])
         .select("userId, image, created_at, updated_at")
         .eq("userId", id)
@@ -111,7 +122,7 @@ module.exports = {
   getPassWordById: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("password")
         .eq("userId", id)
         .then((result) => {
@@ -125,12 +136,55 @@ module.exports = {
   updatePassword: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([data])
         .select("userId, created_at, updated_at")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  createUserSkill: (userId, skill) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .insert([{ userId, skill }])
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getSkillUser: (userId, skill) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .select(" skill ,user(userId,name)")
+        .eq("userId", userId)
+        .eq("skill", skill)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updateUserSkill: (userId, skills) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("users")
+        .eq("userId", userId)
+        .eq("skills", skills)
+        .update([{ skills: [skills] }])
+        .then((result) => {
+          if (!result.error) {
             resolve(result);
           } else {
             reject(result);

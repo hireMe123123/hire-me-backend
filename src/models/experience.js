@@ -1,25 +1,11 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  // updateCompany: (id, data) =>
-  //   new Promise((resolve, reject) => {
-  //     supabase
-  //       .from("company")
-  //       .update(data)
-  //       .eq("id", id)
-  //       .then((result) => {
-  //         if (!result.error) {
-  //           resolve(result);
-  //         } else {
-  //           reject(result);
-  //         }
-  //       });
-  //   }),
-  createCompany: (data) =>
+  createExperience: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
-        .insert([data]) // insert([{name: "Tea", price: 5000}])
+        .from("experience")
+        .insert([data])
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -28,12 +14,12 @@ module.exports = {
           }
         });
     }),
-  getCompanyByEmail: (email) =>
+  getExperienceByUserId: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
+        .from("experience")
         .select("*")
-        .eq("email", email)
+        .eq("userId", userId)
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -42,12 +28,12 @@ module.exports = {
           }
         });
     }),
-  getCompanyById: (id) =>
+  getExperienceById: (experienceId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
-        .select("*")
-        .eq("companyId", id)
+        .from("experience")
+        .select(`*`)
+        .eq("experienceId", experienceId)
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -56,26 +42,26 @@ module.exports = {
           }
         });
     }),
-  updateCompany: (id, data) =>
+  deleteExperience: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("company")
-        .update([data])
-        .eq("companyId", id)
-        .then((result) => {
-          if (!result.error) {
-            resolve(result);
-          } else {
-            reject(result);
-          }
-        });
-    }),
-  deleteCompany: (id) =>
-    new Promise((resolve, reject) => {
-      supabase
-        .from("company")
+        .from("experience")
         .delete()
-        .eq("companyId", id)
+        .eq("experienceId", id)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updateExperience: (id, data) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("experience")
+        .update(data)
+        .eq("experienceId", id)
         .then((result) => {
           if (!result.error) {
             resolve(result);

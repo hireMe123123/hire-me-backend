@@ -24,12 +24,35 @@ module.exports = {
   },
   getAllDataUser: async (request, response) => {
     try {
-      const result = await userModels.getAllUsers();
+      let { page, limit, typeJob } = request.query;
+
+      page = +page || 1;
+      limit = +limit || 5;
+
+      if (typeJob === "") {
+        typeJob = "freelance";
+      }
+
+      const totalData = await userModels.getCountDataUser();
+
+      const totalPage = Math.ceil(totalData / limit);
+
+      const pagination = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+      };
+      const offset = page * limit - limit;
+
+      const result = await userModels.getAllUsers(offset, limit, typeJob);
+
       return wrapper.response(
         response,
         result.status,
         "Success get data user",
-        result.data
+        result.data,
+        pagination
       );
     } catch (error) {
       const {
@@ -102,6 +125,7 @@ module.exports = {
         github,
         gitlab,
         description,
+        skills,
       } = request.body;
 
       const isFalid = await userModels.getUserByIDs(id);
@@ -118,6 +142,7 @@ module.exports = {
       if (isFalid.data.length < 0) {
         return wrapper.response(response, 404, `User is not Found`, []);
       }
+
       const updateData = {
         name,
         profession,
@@ -128,14 +153,24 @@ module.exports = {
         github,
         gitlab,
         description,
+        skills,
         updated_at: dateTime,
       };
-      const result = await userModels.updateDataUser(id, updateData);
+      await userModels.updateDataUser(id, updateData);
+
+      // await userModels.updateUserSkill(id, skills);
+      const result = await userModels.getUserByIDs(id);
+
+      const finalResult = {
+        ...result.data[0],
+        skills,
+      };
+
       return wrapper.response(
         response,
         result.status,
         "Success Update Profile",
-        result.data
+        finalResult
       );
     } catch (error) {
       const {
