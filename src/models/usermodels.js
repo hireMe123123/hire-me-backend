@@ -20,8 +20,12 @@ module.exports = {
         .from("user_with_skills")
         .select("*")
         .range(offset, offset + limit - 1)
-        .order("totalskills", { ascending: false })
-        .ilike("skills", `%${skills}%`);
+        .order("totalskills", { ascending: false });
+
+      if (skills) {
+        query.ilike("skills", `%${skills}%`);
+      }
+
       if (typeJob) {
         query.eq("typeJob", typeJob);
       }

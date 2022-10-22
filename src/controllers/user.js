@@ -30,7 +30,7 @@ module.exports = {
       limit = +limit || 5;
 
       if (typeJob === "") {
-        typeJob = "freelance";
+        typeJob = "";
       }
       if (skills === "") {
         skills = "";
