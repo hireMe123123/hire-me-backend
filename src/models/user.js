@@ -4,7 +4,7 @@ module.exports = {
   getAllUser: () =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("*,userSkill(*)")
         .then((result) => {
           if (!result.error) {
@@ -17,7 +17,7 @@ module.exports = {
   getUserById: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("*")
         .eq("userId", userId)
         .then((result) => {
@@ -31,7 +31,7 @@ module.exports = {
   createUser: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .insert([data])
         .then((result) => {
           if (!result.error) {
@@ -44,7 +44,7 @@ module.exports = {
   updateUser: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update(data)
         .eq("userId", id)
         .then((result) => {
@@ -58,7 +58,7 @@ module.exports = {
   deleteUser: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .delete()
         .eq("userId", id)
         .then((result) => {
@@ -72,7 +72,7 @@ module.exports = {
   updateImageUser: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update(data)
         .eq("userId", id)
         .then((result) => {

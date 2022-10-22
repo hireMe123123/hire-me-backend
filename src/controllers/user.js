@@ -27,11 +27,9 @@ module.exports = {
       let { page, limit, typeJob } = request.query;
 
       page = +page || 1;
-      limit = +limit || 5;
+      limit = +limit || 20;
 
-      if (typeJob === "") {
-        typeJob = "freelance";
-      }
+      typeJob = typeJob || "";
 
       const totalData = await userModels.getCountDataUser();
 

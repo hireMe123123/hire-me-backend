@@ -38,6 +38,7 @@ module.exports = {
         name,
         email,
         password: hash,
+        typeJob: "not set",
         phoneNumber,
       };
 
