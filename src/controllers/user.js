@@ -24,10 +24,11 @@ module.exports = {
   },
   getAllDataUser: async (request, response) => {
     try {
-      let { page, limit, typeJob, skills } = request.query;
+      let { page, limit, typeJob, skills, sortSkill } = request.query;
 
       page = +page || 1;
       limit = +limit || 5;
+      sortSkill = sortSkill || "created_at";
 
       if (typeJob === "") {
         typeJob = "";
@@ -52,7 +53,8 @@ module.exports = {
         offset,
         limit,
         typeJob,
-        skills
+        skills,
+        sortSkill
       );
 
       return wrapper.response(
