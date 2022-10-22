@@ -44,7 +44,7 @@ module.exports = {
   getDataSkill: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("userId,name,userSkill(userSkillId,skill)")
         .eq("userId", userId)
         .then((result) => {
@@ -101,7 +101,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("userSkill")
-        .select("userSkillId, skill(skillName), user(userId)")
+        .select("userSkillId, skill(skillName), users(userId)")
         .textSearch("skill.skillName", `${skillName}`)
         .then((result) => {
           if (result.data) {

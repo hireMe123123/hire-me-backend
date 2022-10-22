@@ -4,7 +4,7 @@ module.exports = {
   getCountDataUser: () =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("*", { count: "exact" })
         .then((result) => {
           if (result.data) {
@@ -17,7 +17,7 @@ module.exports = {
   getAllUsers: (offset, limit, typeJob) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         // .select("userId, name, phoneNumber, email")
         .select("*,userSkill(skill)")
         .range(offset, offset + limit - 1)
@@ -33,7 +33,7 @@ module.exports = {
   checkDataUser: (email) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("userId, email, password")
         .eq("email", email)
         .then((result) => {
@@ -47,7 +47,7 @@ module.exports = {
   registerUser: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .insert([data])
         .select("userId")
         .then((result) => {
@@ -61,7 +61,7 @@ module.exports = {
   getUserByIDs: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("*")
         .eq("userId", id)
         .then((result) => {
@@ -75,7 +75,7 @@ module.exports = {
   deleteUser: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .delete()
         .eq("userId", userId)
         .select(
@@ -92,7 +92,7 @@ module.exports = {
   updateDataUser: (id, updateData) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([updateData])
         .select("*")
         .eq("userId", id)
@@ -107,7 +107,7 @@ module.exports = {
   updateImageUser: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([data])
         .select("userId, image, created_at, updated_at")
         .eq("userId", id)
@@ -122,7 +122,7 @@ module.exports = {
   getPassWordById: (id) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("password")
         .eq("userId", id)
         .then((result) => {
@@ -136,7 +136,7 @@ module.exports = {
   updatePassword: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([data])
         .select("userId, created_at, updated_at")
         .eq("userId", id)
@@ -179,7 +179,7 @@ module.exports = {
   updateUserSkill: (userId, skills) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .eq("userId", userId)
         .eq("skills", skills)
         .update([{ skills: [skills] }])

@@ -5,7 +5,7 @@ module.exports = {
   getUserByEmail: (email) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("*")
         .eq("email", email)
         .then((result) => {
@@ -19,7 +19,7 @@ module.exports = {
   register: (data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .insert([data])
         .then((result) => {
           if (!result.error) {
@@ -32,7 +32,7 @@ module.exports = {
   updateUser: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .update([data])
         .eq("userId", id)
         .then((result) => {
@@ -46,7 +46,7 @@ module.exports = {
   getUserById: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("user")
+        .from("users")
         .select("*")
         .eq("userId", userId)
         .then((result) => {
