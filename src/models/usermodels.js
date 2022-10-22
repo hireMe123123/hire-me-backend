@@ -14,13 +14,13 @@ module.exports = {
           }
         });
     }),
-  getAllUsers: (offset, limit, typeJob, skills) =>
+  getAllUsers: (offset, limit, typeJob, skills, sortSkill) =>
     new Promise((resolve, reject) => {
       const query = supabase
         .from("user_with_skills")
-        .select("*")
+        .select("* ,userSkill(userSkillId,skill)")
         .range(offset, offset + limit - 1)
-        .order("totalskills", { ascending: false });
+        .order(sortSkill, { ascending: false });
 
       if (skills) {
         query.ilike("skills", `%${skills}%`);
