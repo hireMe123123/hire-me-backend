@@ -19,7 +19,7 @@ module.exports = {
       supabase
         .from("user")
         // .select("userId, name, phoneNumber, email")
-        .select("*")
+        .select("*,userSkill(skill)")
         .range(offset, offset + limit - 1)
         .ilike("typeJob", `%${typeJob}%`)
         .then((result) => {
@@ -62,9 +62,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .select(
-          "userId,name, profession, domicile, phoneNumber, image, email, typeJob, instagram, github, gitlab, description, created_at"
-        )
+        .select("*")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
@@ -96,9 +94,7 @@ module.exports = {
       supabase
         .from("user")
         .update([updateData])
-        .select(
-          "userId, name, profession, domicile ,phoneNumber,typeJob,instagram, github, gitlab, description, updated_at"
-        )
+        .select("*")
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
@@ -165,12 +161,28 @@ module.exports = {
           }
         });
     }),
-  getSkillUser: (userId) =>
+  getSkillUser: (userId, skill) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .select(" skill ,user(userId,name)")
+        .eq("userId", userId)
+        .eq("skill", skill)
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  updateUserSkill: (userId, skills) =>
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .select(`userId, name,  userSkill ( skill )`)
         .eq("userId", userId)
+        .eq("skills", skills)
+        .update([{ skills: [skills] }])
         .then((result) => {
           if (!result.error) {
             resolve(result);

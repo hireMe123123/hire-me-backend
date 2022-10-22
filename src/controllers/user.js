@@ -46,6 +46,7 @@ module.exports = {
       const offset = page * limit - limit;
 
       const result = await userModels.getAllUsers(offset, limit, typeJob);
+
       return wrapper.response(
         response,
         result.status,
@@ -124,7 +125,7 @@ module.exports = {
         github,
         gitlab,
         description,
-        skill,
+        skills,
       } = request.body;
 
       const isFalid = await userModels.getUserByIDs(id);
@@ -141,6 +142,7 @@ module.exports = {
       if (isFalid.data.length < 0) {
         return wrapper.response(response, 404, `User is not Found`, []);
       }
+
       const updateData = {
         name,
         profession,
@@ -151,22 +153,18 @@ module.exports = {
         github,
         gitlab,
         description,
+        skills,
         updated_at: dateTime,
       };
-      const result = await userModels.updateDataUser(id, updateData);
-      const { userId } = result.data[0];
+      await userModels.updateDataUser(id, updateData);
 
-      const resultUserSkill = await Promise.all(
-        skill.map(async (e) => {
-          try {
-            await userModels.createUserSkill(userId, e);
-            return e;
-          } catch (error) {
-            return error.error;
-          }
-        })
-      );
-      const finalResult = { ...result.data[0], skill: resultUserSkill };
+      // await userModels.updateUserSkill(id, skills);
+      const result = await userModels.getUserByIDs(id);
+
+      const finalResult = {
+        ...result.data[0],
+        skills,
+      };
 
       return wrapper.response(
         response,
@@ -272,34 +270,6 @@ module.exports = {
         error: errorUpdate = null,
       } = error;
       return wrapper.response(response, status, statusText, errorUpdate);
-    }
-  },
-  getSkillUser: async (request, response) => {
-    try {
-      const { userId } = request.params;
-      const result = await userModels.getSkillUser(userId);
-      if (result.data.length < 1) {
-        return wrapper.response(
-          response,
-          404,
-          `Skill User By User Id ${userId} Not Found`,
-          []
-        );
-      }
-
-      return wrapper.response(
-        response,
-        result.status,
-        "Success Get Skill User",
-        result.data
-      );
-    } catch (error) {
-      const {
-        status = 500,
-        statusText = "Internal Server Error",
-        error: errorData = null,
-      } = error;
-      return wrapper.response(response, status, statusText, errorData);
     }
   },
 };
