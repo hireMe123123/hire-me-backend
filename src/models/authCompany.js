@@ -1,33 +1,6 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  // updateCompany: (id, data) =>
-  //   new Promise((resolve, reject) => {
-  //     supabase
-  //       .from("company")
-  //       .update(data)
-  //       .eq("id", id)
-  //       .then((result) => {
-  //         if (!result.error) {
-  //           resolve(result);
-  //         } else {
-  //           reject(result);
-  //         }
-  //       });
-  //   }),
-  createCompany: (data) =>
-    new Promise((resolve, reject) => {
-      supabase
-        .from("company")
-        .insert([data]) // insert([{name: "Tea", price: 5000}])
-        .then((result) => {
-          if (!result.error) {
-            resolve(result);
-          } else {
-            reject(result);
-          }
-        });
-    }),
   getCompanyByEmail: (email) =>
     new Promise((resolve, reject) => {
       supabase
@@ -42,12 +15,11 @@ module.exports = {
           }
         });
     }),
-  getCompanyById: (id) =>
+  register: (data) =>
     new Promise((resolve, reject) => {
       supabase
         .from("company")
-        .select("*")
-        .eq("companyId", id)
+        .insert([data])
         .then((result) => {
           if (!result.error) {
             resolve(result);
@@ -70,12 +42,12 @@ module.exports = {
           }
         });
     }),
-  deleteCompany: (id) =>
+  getCompanyById: (companyId) =>
     new Promise((resolve, reject) => {
       supabase
         .from("company")
-        .delete()
-        .eq("companyId", id)
+        .select("*")
+        .eq("companyId", companyId)
         .then((result) => {
           if (!result.error) {
             resolve(result);

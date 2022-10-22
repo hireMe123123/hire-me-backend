@@ -1,24 +1,35 @@
+/* eslint-disable consistent-return */
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const otpGenerator = require("otp-generator");
 const client = require("../config/redis");
-const authModel = require("../models/auth");
+const authCompanyModel = require("../models/authCompany");
 const wrapper = require("../utils/wrapper");
-const { sendMail, sendMailToResetPassword } = require("../utils/mail");
+const {
+  sendMail,
+  sendMailToResetPassword,
+  hiredGreetings,
+} = require("../utils/mail");
+const userModel = require("../models/usermodels");
 
 module.exports = {
   register: async (request, response) => {
     try {
-      const { name, email, phoneNumber, password, confirmPassword } =
-        request.body;
+      const {
+        name,
+        email,
+        field,
+        phonenumber,
+        password,
+        confirmPassword,
+        companyName,
+      } = request.body;
 
-      // PROSES PENGECEKAN APAKAH EMAIL YANG MAU DI DAFTARKAN SUDAH ADA ATAU BELUM ?
-      const checkEmail = await authModel.getUserByEmail(email);
+      const checkEmail = await authCompanyModel.getCompanyByEmail(email);
       if (checkEmail.data.length > 0) {
         return wrapper.response(response, 403, "Email Alredy Registered", null);
       }
 
-      // PROSES VALIDASI PASSWORD
       if (password.length < 6) {
         return wrapper.response(
           response,
@@ -38,15 +49,15 @@ module.exports = {
         name,
         email,
         password: hash,
-        phoneNumber,
+        phonenumber,
+        field,
+        companyName,
       };
 
-      // PROSES MENYIMPAN DATA KE DATABASE LEWAT MODEL
-      await authModel.register(setData);
-      const user = await authModel.getUserByEmail(email);
-      const newResult = [{ userId: user.data[0].userId }];
+      await authCompanyModel.register(setData);
+      const company = await authCompanyModel.getCompanyByEmail(email);
+      const newResult = [{ companyId: company.data[0].companyId }];
 
-      // GENERATE OTP
       const OTP = otpGenerator.generate(6, {
         upperCaseAlphabets: false,
         specialChars: false,
@@ -54,15 +65,14 @@ module.exports = {
       });
 
       client.setEx(`OTP:${OTP}`, 3600, OTP);
-      client.setEx(`userId:${OTP}`, 3600 * 48, user.data[0].userId);
+      client.setEx(`companyId:${OTP}`, 3600 * 48, company.data[0].companyId);
 
-      // SEND EMAIL ACTIVATION
       const setMailOptions = {
         to: email,
         name,
         subject: "Email Verification !",
         template: "verificationEmail.html",
-        buttonUrl: `http://localhost:3001/api/auth/verify/${OTP}`,
+        buttonUrl: `http://localhost:3001/api/authCompany/verify/${OTP}`,
         OTP,
       };
 
@@ -87,18 +97,18 @@ module.exports = {
     try {
       const { OTP } = request.params;
 
-      const userId = await client.get(`userId:${OTP}`);
-      // const cehckOTP = await client.get(`OTP:${OTP}`);
-      if (!userId) {
+      const companyId = await client.get(`companyId:${OTP}`);
+
+      if (!companyId) {
         return wrapper.response(response, 400, "Wrong Input OTP", null);
       }
 
-      const result = [{ userId }];
+      const result = [{ companyId }];
 
       const setStatus = {
         status: "active",
       };
-      await authModel.updateUser(userId, setStatus);
+      await authCompanyModel.updateCompany(companyId, setStatus);
 
       return wrapper.response(response, 200, "Verify Success ", result);
     } catch (error) {
@@ -114,22 +124,17 @@ module.exports = {
     try {
       const { email, password } = request.body;
 
-      // 1. PROSES PENGECEKAN EMAIL
-      const checkEmail = await authModel.getUserByEmail(email);
+      const checkEmail = await authCompanyModel.getCompanyByEmail(email);
 
       if (checkEmail.data.length < 1) {
-        return wrapper.response(response, 404, "Email Not Registed", null);
+        return wrapper.response(response, 404, "Email Not Registered", null);
       }
-
-      // 2. PROSES PENCOCOKAN PASSWORD
       const isValid = await bcrypt
         .compare(password, checkEmail.data[0].password)
         .then((result) => result);
       if (!isValid) {
         return wrapper.response(response, 400, "Wrong Password", null);
       }
-
-      // CEK STATUS ACCOUNT
 
       if (checkEmail.data[0].status !== "active") {
         return wrapper.response(
@@ -141,8 +146,8 @@ module.exports = {
       }
 
       const payload = {
-        userId: checkEmail.data[0].userId,
-        role: !checkEmail.data[0].role ? "user" : checkEmail.data[0].role,
+        userId: checkEmail.data[0].companyId,
+        role: !checkEmail.data[0].role ? "company" : checkEmail.data[0].role,
       };
 
       const token = jwt.sign(payload, process.env.ACCESS_KEYS, {
@@ -152,10 +157,8 @@ module.exports = {
       const refreshToken = jwt.sign(payload, process.env.REFRESH_KEYS, {
         expiresIn: "36h",
       });
-
-      // 4. PROSES RESPON KE USER
       const newResult = {
-        userId: checkEmail.data[0].userId,
+        companyId: checkEmail.data[0].companyId,
         token,
         refreshToken,
       };
@@ -188,7 +191,6 @@ module.exports = {
       return wrapper.response(response, status, statusText, errorData);
     }
   },
-  // eslint-disable-next-line consistent-return
   refresh: async (request, response) => {
     try {
       const { refreshtoken } = request.headers;
@@ -223,7 +225,7 @@ module.exports = {
           return wrapper.response(response, 401, error.message, null);
         }
         payload = {
-          userId: result.userId,
+          companyId: result.companyId,
           role: result.role,
         };
 
@@ -234,9 +236,10 @@ module.exports = {
         newRefreshtoken = jwt.sign(payload, process.env.REFRESH_KEYS, {
           expiresIn: "36h",
         });
+
         client.setEx(`refreshtoken:${refreshtoken}`, 3600 * 36, refreshtoken);
         const newResult = {
-          userId: payload.userId,
+          companyId: payload.companyId,
           token,
           refreshtoken: newRefreshtoken,
         };
@@ -260,12 +263,13 @@ module.exports = {
   forgotPassword: async (request, response) => {
     try {
       const { email } = request.body;
-      const checkEmail = await authModel.getUserByEmail(email);
+      const checkEmail = await authCompanyModel.getCompanyByEmail(email);
 
       if (checkEmail.length < 1) {
         return wrapper.response(response, 400, "Email Not Registered", null);
       }
-      const { userId } = checkEmail.data[0];
+
+      const { companyId } = checkEmail.data[0];
       const { name } = checkEmail.data[0];
 
       const OTPReset = otpGenerator.generate(6, {
@@ -273,14 +277,14 @@ module.exports = {
         specialChars: false,
         lowerCaseAlphabets: false,
       });
-      client.setEx(`userId:${OTPReset}`, 36000 * 48, userId);
+      client.setEx(`companyId:${OTPReset}`, 36000 * 48, companyId);
 
       const setMailOptions = {
         to: email,
         name,
         subject: "Email Verification !",
         template: "verificationResetPassword.html",
-        buttonUrl: `http://localhost:3001/api/auth/resetPassword/${OTPReset}`,
+        buttonUrl: `http://localhost:3001/api/authCompany/resetPassword/${OTPReset}`,
       };
 
       await sendMailToResetPassword(setMailOptions);
@@ -306,39 +310,78 @@ module.exports = {
       const { OTPReset } = request.params;
       const { newPassword, confirmPassword } = request.body;
 
-      const userId = await client.get(`userId:${OTPReset}`);
+      const companyId = await client.get(`companyId:${OTPReset}`);
 
-      if (!userId) {
+      if (!companyId) {
         return wrapper.response(response, 400, "Wrong Input OTPReset", null);
       }
 
-      const checkId = await authModel.getUserById(userId);
+      const checkId = await authCompanyModel.getCompanyById(companyId);
       if (checkId.data.length < 1) {
         return wrapper.response(
           response,
           404,
-          `Update By Id ${userId} Not Found`,
+          `Update By Id ${companyId} Not Found`,
           []
         );
       }
 
-      // CONFIRM NEWPASSWORD
       if (newPassword !== confirmPassword) {
         return wrapper.response(response, 400, "Password Not Match", null);
       }
 
-      // HASH PASSWORD
       const hash = bcrypt.hashSync(newPassword, 10);
       const setData = {
         password: hash,
         updated_at: "now()",
       };
-      await authModel.updateUser(userId, setData);
+      await authCompanyModel.updateCompany(companyId, setData);
 
-      const user = await authModel.getUserById(userId);
-      const result = [{ userId: user.data[0].userId }];
+      const company = await authCompanyModel.getCompanyById(companyId);
+      const result = [{ companyId: company.data[0].companyId }];
 
       return wrapper.response(response, 200, "Success Reset Password ", result);
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
+  },
+  hire: async (request, response) => {
+    try {
+      const { userId } = request.params;
+      const checkUserId = await userModel.getUserByIDs(userId);
+
+      if (checkUserId.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `user with id: ${userId} Not Found`,
+          []
+        );
+      }
+
+      const { name } = checkUserId.data[0];
+      const setMailOptions = {
+        to: checkUserId.data[0].email,
+        name,
+        subject: "congratulations !",
+        template: "greetings.html",
+      };
+
+      await hiredGreetings(setMailOptions);
+
+      const newResult = [{ userId: checkUserId.data[0].userId }];
+
+      return wrapper.response(
+        response,
+        200,
+        `Success send Email to user id : ${userId}`,
+        newResult
+      );
     } catch (error) {
       const {
         status = 500,

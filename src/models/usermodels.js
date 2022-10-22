@@ -1,12 +1,27 @@
 const supabase = require("../config/supabase");
 
 module.exports = {
-  getAllUsers: () =>
+  getCountDataUser: () =>
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .select("userId, name, phoneNumber, email")
-        // .select("*")
+        .select("*", { count: "exact" })
+        .then((result) => {
+          if (result.data) {
+            resolve(result.count);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getAllUsers: (offset, limit, typeJob) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        // .select("userId, name, phoneNumber, email")
+        .select("*")
+        .range(offset, offset + limit - 1)
+        .ilike("typeJob", `%${typeJob}%`)
         .then((result) => {
           if (result.error) {
             reject(result);
@@ -131,6 +146,33 @@ module.exports = {
         .eq("userId", id)
         .then((result) => {
           if (result.data) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  createUserSkill: (userId, skill) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("userSkill")
+        .insert([{ userId, skill }])
+        .then((result) => {
+          if (!result.error) {
+            resolve(result);
+          } else {
+            reject(result);
+          }
+        });
+    }),
+  getSkillUser: (userId) =>
+    new Promise((resolve, reject) => {
+      supabase
+        .from("user")
+        .select(`userId, name,  userSkill ( skill )`)
+        .eq("userId", userId)
+        .then((result) => {
+          if (!result.error) {
             resolve(result);
           } else {
             reject(result);

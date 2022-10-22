@@ -1,4 +1,5 @@
 const skillModel = require("../models/skillmodels");
+const updateTime = require("../utils/updateTime");
 const wrapper = require("../utils/wrapper");
 
 module.exports = {
@@ -21,48 +22,99 @@ module.exports = {
       return wrapper.response(response, status, statusText, errorData);
     }
   },
-  getDataSkillFromSeacrh: async (request, response) => {
+  createDataSkill: async (request, response) => {
     try {
-      const { page, limit, searchName, sort } = request.query;
-      page = +page || 1;
-      limit = +limit || 5;
-      const column = "skill";
-      let typeJob;
+      const { userId, skillName } = request.body;
 
-      if (sort === "") {
-        typeJob = "freelance";
-      }
-
-      const totalData = await skillModel.getCountDataSkill();
-      const totalPage = Math.ceil(totalData / limit);
-      const pagination = {
-        page,
-        totalPage,
-        limit,
-        totalData,
+      const data = {
+        skillName,
       };
-      const offset = page * limit - limit;
-      const result = await skillModel.getAllSkill(
-        offset,
-        limit,
-        searchName,
-        column,
-        typeJob
+      const result = await skillModel.inputDataSkill(data);
+      const { skillId } = result.data[0];
+      const dataUserSkill = {
+        userId,
+        skillId,
+      };
+
+      // eslint-disable-next-line no-unused-vars
+      const resultUserSkill = await skillModel.inputDataUserSkill(
+        dataUserSkill
       );
       return wrapper.response(
         response,
         result.status,
-        "Success get all Events",
-        result.data,
-        pagination
+        "Success Input Skill",
+        result.data
       );
     } catch (error) {
       const {
         status = 500,
         statusText = "Internal Server Error",
-        error: errorData = null,
+        error: errorInput = null,
       } = error;
-      return wrapper.response(response, status, statusText, errorData);
+      return wrapper.response(response, status, statusText, errorInput);
     }
+  },
+  deleteSKill: async (request, response) => {
+    try {
+      const { id } = request.params;
+      const { skillId } = request.body;
+
+      const isFalid = await skillModel.getDataSkill(id, skillId);
+
+      const userSkillid = isFalid.data[0].userSkillId;
+
+      await skillModel.deleteUserSkill(userSkillid);
+
+      const result = await skillModel.deleteSkill(skillId);
+      return wrapper.response(
+        response,
+        result.status,
+        `Success delete Skill`,
+        result.data
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorDelete = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorDelete);
+    }
+  },
+  updateSkill: async (request, response) => {
+    try {
+      // eslint-disable-next-line no-unused-vars
+      const { id } = request.params;
+      const { skillId, skillName } = request.body;
+
+      const dateTime = updateTime.dateTime();
+      const setData = {
+        skillName,
+        updated_at: dateTime,
+      };
+
+      const result = await skillModel.updateSkillName(skillId, setData);
+      return wrapper.response(
+        response,
+        result.status,
+        "Success update skill name",
+        result.data
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorUpdate = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorUpdate);
+    }
+  },
+  getDataUserBySkillName: async (request, response) => {
+    try {
+      const { skillName, page, limit } = request.query;
+      const totalData = await skillModel.getDataSkillName(skillName);
+      console.log(totalData.data);
+    } catch (error) {}
   },
 };

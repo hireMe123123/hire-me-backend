@@ -24,12 +24,34 @@ module.exports = {
   },
   getAllDataUser: async (request, response) => {
     try {
-      const result = await userModels.getAllUsers();
+      let { page, limit, typeJob } = request.query;
+
+      page = +page || 1;
+      limit = +limit || 5;
+
+      if (typeJob === "") {
+        typeJob = "freelance";
+      }
+
+      const totalData = await userModels.getCountDataUser();
+
+      const totalPage = Math.ceil(totalData / limit);
+
+      const pagination = {
+        page,
+        totalPage,
+        limit,
+        totalData,
+      };
+      const offset = page * limit - limit;
+
+      const result = await userModels.getAllUsers(offset, limit, typeJob);
       return wrapper.response(
         response,
         result.status,
         "Success get data user",
-        result.data
+        result.data,
+        pagination
       );
     } catch (error) {
       const {
@@ -102,6 +124,7 @@ module.exports = {
         github,
         gitlab,
         description,
+        skill,
       } = request.body;
 
       const isFalid = await userModels.getUserByIDs(id);
@@ -131,11 +154,25 @@ module.exports = {
         updated_at: dateTime,
       };
       const result = await userModels.updateDataUser(id, updateData);
+      const { userId } = result.data[0];
+
+      const resultUserSkill = await Promise.all(
+        skill.map(async (e) => {
+          try {
+            await userModels.createUserSkill(userId, e);
+            return e;
+          } catch (error) {
+            return error.error;
+          }
+        })
+      );
+      const finalResult = { ...result.data[0], skill: resultUserSkill };
+
       return wrapper.response(
         response,
         result.status,
         "Success Update Profile",
-        result.data
+        finalResult
       );
     } catch (error) {
       const {
@@ -235,6 +272,34 @@ module.exports = {
         error: errorUpdate = null,
       } = error;
       return wrapper.response(response, status, statusText, errorUpdate);
+    }
+  },
+  getSkillUser: async (request, response) => {
+    try {
+      const { userId } = request.params;
+      const result = await userModels.getSkillUser(userId);
+      if (result.data.length < 1) {
+        return wrapper.response(
+          response,
+          404,
+          `Skill User By User Id ${userId} Not Found`,
+          []
+        );
+      }
+
+      return wrapper.response(
+        response,
+        result.status,
+        "Success Get Skill User",
+        result.data
+      );
+    } catch (error) {
+      const {
+        status = 500,
+        statusText = "Internal Server Error",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
     }
   },
 };
