@@ -24,13 +24,16 @@ module.exports = {
   },
   getAllDataUser: async (request, response) => {
     try {
-      let { page, limit, typeJob } = request.query;
+      let { page, limit, typeJob, skills } = request.query;
 
       page = +page || 1;
       limit = +limit || 5;
 
       if (typeJob === "") {
-        typeJob = "freelance";
+        typeJob = "";
+      }
+      if (skills === "") {
+        skills = "";
       }
 
       const totalData = await userModels.getCountDataUser();
@@ -45,7 +48,12 @@ module.exports = {
       };
       const offset = page * limit - limit;
 
-      const result = await userModels.getAllUsers(offset, limit, typeJob);
+      const result = await userModels.getAllUsers(
+        offset,
+        limit,
+        typeJob,
+        skills
+      );
 
       return wrapper.response(
         response,
