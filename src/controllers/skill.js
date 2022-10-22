@@ -24,16 +24,11 @@ module.exports = {
   },
   createDataSkill: async (request, response) => {
     try {
-      const { userId, skillName } = request.body;
+      const { userId, skill } = request.body;
 
-      const data = {
-        skillName,
-      };
-      const result = await skillModel.inputDataSkill(data);
-      const { skillId } = result.data[0];
       const dataUserSkill = {
         userId,
-        skillId,
+        skill,
       };
 
       // eslint-disable-next-line no-unused-vars
@@ -42,11 +37,12 @@ module.exports = {
       );
       return wrapper.response(
         response,
-        result.status,
+        resultUserSkill.status,
         "Success Input Skill",
-        result.data
+        resultUserSkill.data
       );
     } catch (error) {
+      console.log(error);
       const {
         status = 500,
         statusText = "Internal Server Error",
@@ -58,15 +54,12 @@ module.exports = {
   deleteSKill: async (request, response) => {
     try {
       const { id } = request.params;
-      const { skillId } = request.body;
 
-      const isFalid = await skillModel.getDataSkill(id, skillId);
+      // const isFalid = await skillModel.getDataSkill(id);
 
-      const userSkillid = isFalid.data[0].userSkillId;
+      // const userSkillid = isFalid.data[0].userSkillId;
 
-      await skillModel.deleteUserSkill(userSkillid);
-
-      const result = await skillModel.deleteSkill(skillId);
+      const result = await skillModel.deleteUserSkill(id);
       return wrapper.response(
         response,
         result.status,
@@ -86,15 +79,15 @@ module.exports = {
     try {
       // eslint-disable-next-line no-unused-vars
       const { id } = request.params;
-      const { skillId, skillName } = request.body;
+      const { skill } = request.body;
 
       const dateTime = updateTime.dateTime();
       const setData = {
-        skillName,
+        skill,
         updated_at: dateTime,
       };
 
-      const result = await skillModel.updateSkillName(skillId, setData);
+      const result = await skillModel.updateSkillName(id, setData);
       return wrapper.response(
         response,
         result.status,
@@ -110,11 +103,23 @@ module.exports = {
       return wrapper.response(response, status, statusText, errorUpdate);
     }
   },
-  getDataUserBySkillName: async (request, response) => {
+  getDataByUserId: async (request, response) => {
     try {
-      const { skillName, page, limit } = request.query;
-      const totalData = await skillModel.getDataSkillName(skillName);
-      console.log(totalData.data);
-    } catch (error) {}
+      const { id } = request.params;
+      const result = await skillModel.getDataSkill(id);
+      return wrapper.response(
+        response,
+        result.status,
+        "Success get Data",
+        result.data
+      );
+    } catch (error) {
+      const {
+        status = 404,
+        statusText = "Data Not Found",
+        error: errorData = null,
+      } = error;
+      return wrapper.response(response, status, statusText, errorData);
+    }
   },
 };

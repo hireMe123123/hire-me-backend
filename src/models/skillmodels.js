@@ -6,7 +6,7 @@ module.exports = {
       supabase
         .from("userSkill")
         .select("*")
-        .eq("skillId", id)
+        .eq("userSkillId", id)
         .then((result) => {
           if (result.data) {
             resolve(result);
@@ -41,13 +41,12 @@ module.exports = {
           }
         });
     }),
-  getDataSkill: (userId, skillId) =>
+  getDataSkill: (userId) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("userSkill")
-        .select("*")
+        .from("user")
+        .select("userId,name,userSkill(userSkillId,skill)")
         .eq("userId", userId)
-        .eq("skillId", skillId)
         .then((result) => {
           if (result.data) {
             resolve(result);
@@ -84,13 +83,12 @@ module.exports = {
           }
         });
     }),
-  updateSkillName: (skillid, data) =>
+  updateSkillName: (id, data) =>
     new Promise((resolve, reject) => {
       supabase
-        .from("skill")
+        .from("userSkill")
         .update([data])
-        .select("*")
-        .eq("skillId", skillid)
+        .eq("userSkillId", id)
         .then((result) => {
           if (result.data) {
             resolve(result);

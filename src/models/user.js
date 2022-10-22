@@ -5,7 +5,7 @@ module.exports = {
     new Promise((resolve, reject) => {
       supabase
         .from("user")
-        .select("*")
+        .select("*,userSkill(*)")
         .then((result) => {
           if (!result.error) {
             resolve(result);
