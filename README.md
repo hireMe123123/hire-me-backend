@@ -21,9 +21,7 @@ REACT_APP_ENDPOINT = [Backend API]
 
 ## License - untuk project individu
 
-© [HireMe](https://github.com/hireMe123123/)
-
-## Team - untuk project team
+## Set up .env file
 
 > All Members of Default Team
 

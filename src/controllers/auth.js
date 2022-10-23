@@ -282,7 +282,7 @@ module.exports = {
         name,
         subject: "Email Verification !",
         template: "verificationResetPassword.html",
-        buttonUrl: `http://localhost:3001/api/auth/resetPassword/${OTPReset}`,
+        buttonUrl: `http://localhost:3000/api/auth/resetPassword/${OTPReset}`,
       };
 
       await sendMailToResetPassword(setMailOptions);
