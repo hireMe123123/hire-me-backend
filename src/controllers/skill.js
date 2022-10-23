@@ -7,6 +7,9 @@ module.exports = {
     try {
       const { id } = request.params;
       const result = await skillModel.getSkillId(id);
+      if (result.data.length < 1) {
+        return wrapper.response(response, 404, "Data Not Found", []);
+      }
       return wrapper.response(
         response,
         result.status,
@@ -42,7 +45,6 @@ module.exports = {
         resultUserSkill.data
       );
     } catch (error) {
-      console.log(error);
       const {
         status = 500,
         statusText = "Internal Server Error",
@@ -60,6 +62,9 @@ module.exports = {
       // const userSkillid = isFalid.data[0].userSkillId;
 
       const result = await skillModel.deleteUserSkill(id);
+      if (result.data.length < 1) {
+        return wrapper.response(response, 404, "Data Not Found", []);
+      }
       return wrapper.response(
         response,
         result.status,
@@ -107,6 +112,9 @@ module.exports = {
     try {
       const { id } = request.params;
       const result = await skillModel.getDataSkill(id);
+      if (result.data.length < 1) {
+        return wrapper.response(response, 404, "Data Not Found", []);
+      }
       return wrapper.response(
         response,
         result.status,
