@@ -76,7 +76,6 @@ module.exports = {
         newResult
       );
     } catch (error) {
-      console.log(error);
       const {
         status = 500,
         statusText = "Internal Server Error",
@@ -91,7 +90,6 @@ module.exports = {
       const { OTP } = request.params;
 
       const userId = await client.get(`userId:${OTP}`);
-      // const cehckOTP = await client.get(`OTP:${OTP}`);
       if (!userId) {
         return wrapper.response(response, 400, "Wrong Input OTP", null);
       }

@@ -23,10 +23,6 @@ module.exports = {
       const filePath = path.join(__dirname, `../templates/${data.template}`);
       const fileTemplate = fs.readFileSync(filePath, "utf8");
 
-      // const fileTemplate = fs.readFileSync(
-      //   `src/templates/${data.template}`,
-      //   "utf8"
-      // );
       const mailOptions = {
         from: '"HireMe" <hire66779@gmail.com>',
         to: data.to,
@@ -57,10 +53,6 @@ module.exports = {
       });
       const filePath = path.join(__dirname, `../templates/${data.template}`);
       const fileTemplate = fs.readFileSync(filePath, "utf8");
-      // const fileTemplate = fs.readFileSync(
-      //   `src/templates/${data.template}`,
-      //   "utf8"
-      // );
       const mailOptions = {
         from: '"HireMe" <hire66779@gmail.com>',
         to: data.to,
@@ -91,10 +83,6 @@ module.exports = {
       });
       const filePath = path.join(__dirname, `../templates/${data.template}`);
       const fileTemplate = fs.readFileSync(filePath, "utf8");
-      // const fileTemplate = fs.readFileSync(
-      //   `src/templates/${data.template}`,
-      //   "utf8"
-      // );
       const mailOptions = {
         from: '"HireMe" <hire66779@gmail.com>',
         to: data.to,
