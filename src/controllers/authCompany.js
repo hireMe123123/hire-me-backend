@@ -285,9 +285,10 @@ module.exports = {
         name,
         subject: "Email Verification !",
         template: "verificationResetPassword.html",
-        buttonUrl: `https://hire-me-backend.vercel.app/api/authCompany/resetPassword/${OTPReset}`,
 
+        buttonUrl: `https://hire-me-backend.vercel.app/api/authCompany/resetPassword/${OTPReset}`,
         // buttonUrl: `http://localhost:3000/api/authCompany/resetPassword/${OTPReset}`,
+        buttonUrl: `http://localhost:3000/resetPasswordCompany/${OTPReset}`,
       };
 
       await sendMailToResetPassword(setMailOptions);
