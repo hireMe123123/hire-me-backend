@@ -51,10 +51,6 @@ REACT_APP_ENDPOINT = [Backend API]
 - [Redux](https://redux.js.org/)
 - [Supabase](https://supabase.com/)
 
-## License - untuk project individu
-
-© [Bagus Tri Harjanto](https://github.com/bagusth15/)
-
 ## Team - untuk project team
 
 © [Hire-Me](https://github.com/hireMe123123)
