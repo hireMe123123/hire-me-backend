@@ -62,7 +62,8 @@ module.exports = {
         name,
         subject: "Email Verification !",
         template: "verificationEmail.html",
-        buttonUrl: `http://localhost:3001/api/auth/verify/${OTP}`,
+        buttonUrl: `https://hire-me-backend.vercel.app/api/auth/verify/${OTP}`,
+        // buttonUrl: `http://localhost:3001/api/auth/verify/${OTP}`,
         OTP,
       };
 
@@ -282,7 +283,8 @@ module.exports = {
         name,
         subject: "Email Verification !",
         template: "verificationResetPassword.html",
-        buttonUrl: `http://localhost:3000/resetPassword/${OTPReset}`,
+        buttonUrl: `https://hire-me-backend.vercel.app/api/auth/resetPassword/${OTPReset}`,
+        // buttonUrl: `http://localhost:3001/api/auth/resetPassword/${OTPReset}`,
       };
 
       await sendMailToResetPassword(setMailOptions);
