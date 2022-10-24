@@ -1,7 +1,6 @@
 const experienceModel = require("../models/experience");
 const wrapper = require("../utils/wrapper");
 const userModel = require("../models/usermodels");
-// const client = require("../config/redis");
 
 module.exports = {
   createExperience: async (request, response) => {

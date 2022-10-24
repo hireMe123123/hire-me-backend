@@ -57,10 +57,6 @@ module.exports = {
     try {
       const { id } = request.params;
 
-      // const isFalid = await skillModel.getDataSkill(id);
-
-      // const userSkillid = isFalid.data[0].userSkillId;
-
       const result = await skillModel.deleteUserSkill(id);
       if (result.data.length < 1) {
         return wrapper.response(response, 404, "Data Not Found", []);
