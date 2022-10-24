@@ -15,7 +15,7 @@ module.exports = {
         folder: "HireMe",
       },
     });
-    const largeSize = 500000;
+    const largeSize = 1204 * 500;
     const upload = multer({
       storage,
       fileFilter: (req, file, cb) => {
@@ -54,7 +54,7 @@ module.exports = {
         folder: "EventsImage",
       },
     });
-    const largeSize = 500000;
+    const largeSize = 1204 * 500;
     const upload = multer({
       storage,
       fileFilter: (req, file, cb) => {
@@ -65,7 +65,7 @@ module.exports = {
           ext !== ".png" &&
           ext !== ".PNG"
         ) {
-          cb(new Error("Only type .pdf are allowed"), false);
+          cb(new Error("Only type .jpeg/jpg/png are allowed"), false);
           return;
         }
         cb(null, true);
