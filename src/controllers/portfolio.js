@@ -2,7 +2,6 @@ const portfolioModel = require("../models/portfolio");
 const wrapper = require("../utils/wrapper");
 const cloudinary = require("../config/cloudinary");
 const userModel = require("../models/usermodels");
-// const client = require("../config/redis");
 
 module.exports = {
   createPortfolio: async (request, response) => {
@@ -46,7 +45,6 @@ module.exports = {
         name: dataUser.data[0].name,
         data: result.data,
       };
-      console.log(newResult);
       if (result.data.length < 1) {
         return wrapper.response(
           response,

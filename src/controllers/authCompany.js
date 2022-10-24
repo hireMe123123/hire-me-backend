@@ -285,7 +285,7 @@ module.exports = {
         name,
         subject: "Email Verification !",
         template: "verificationResetPassword.html",
-        buttonUrl: `https://hire-me-backend.vercel.app/api/authCompany/resetPassword/${OTPReset}`,
+        buttonUrl: `hhttps://hireme-fwb10.netlify.app/resetPasswordCompany/${OTPReset}`,
         // buttonUrl: `http://localhost:3000/api/authCompany/resetPassword/${OTPReset}`,
       };
 

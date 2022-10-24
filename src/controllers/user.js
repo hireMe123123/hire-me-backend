@@ -140,13 +140,6 @@ module.exports = {
 
       const isFalid = await userModels.getUserByIDs(id);
 
-      // const current = new Date();
-      // const cDate = `${current.getFullYear()}-${
-      //   current.getMonth() + 1
-      // }-${current.getDate()}`;
-      // const cTime = `${current.getHours()}:${current.getMinutes()}:${current.getSeconds()}`;
-      // const dateTime = `${cDate} ${cTime}`;
-
       const dateTime = updateTime.dateTime();
 
       if (isFalid.data.length < 0) {
@@ -168,7 +161,6 @@ module.exports = {
       };
       await userModels.updateDataUser(id, updateData);
 
-      // await userModels.updateUserSkill(id, skills);
       const result = await userModels.getUserByIDs(id);
 
       const finalResult = {
@@ -228,7 +220,6 @@ module.exports = {
         "Success Update Image Profile",
         result.data
       );
-      // if (isFalid.data)
     } catch (error) {
       const {
         status = 500,
