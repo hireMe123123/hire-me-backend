@@ -1,6 +1,6 @@
 <h1 align='center'>Hire-Me</h1>
   <p align="center">
-    <a href="">View Demo</a>
+    <a href="https://hireme-fwb10.netlify.app/">View Demo</a>
     ·
     <a href="https://github.com/usergithub/hire-me-backend/issues">Report Bug Backend</a>
     ·
@@ -11,7 +11,7 @@
     <a href="https://github.com/hireMe123123/hire-me-frontend/pulls">Request Feature Frontend</a>
   </p>
 
-![Image Banner](src/assets/img/bannerREADME.png)
+![Image Banner](src/assets/img/28.png)
 
 ## About The Project
 
