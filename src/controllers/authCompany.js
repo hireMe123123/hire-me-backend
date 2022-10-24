@@ -285,7 +285,7 @@ module.exports = {
         name,
         subject: "Email Verification !",
         template: "verificationResetPassword.html",
-        buttonUrl: `hhttps://hireme-fwb10.netlify.app/resetPasswordCompany/${OTPReset}`,
+        buttonUrl: `https://hireme-fwb10.netlify.app/resetpassword/${OTPReset}`,
         // buttonUrl: `http://localhost:3000/api/authCompany/resetPassword/${OTPReset}`,
       };
 
