@@ -2,7 +2,7 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const otpGenerator = require("otp-generator");
-const client = require("../config/redis");
+// const client = require("../config/redis");
 const authCompanyModel = require("../models/authCompany");
 const wrapper = require("../utils/wrapper");
 const {
@@ -64,8 +64,8 @@ module.exports = {
         lowerCaseAlphabets: false,
       });
 
-      client.setEx(`OTP:${OTP}`, 3600, OTP);
-      client.setEx(`companyId:${OTP}`, 3600 * 48, company.data[0].companyId);
+      // client.setEx(`OTP:${OTP}`, 3600, OTP);
+      // client.setEx(`companyId:${OTP}`, 3600 * 48, company.data[0].companyId);
 
       const setMailOptions = {
         to: email,

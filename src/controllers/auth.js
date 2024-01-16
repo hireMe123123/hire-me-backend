@@ -1,7 +1,6 @@
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const otpGenerator = require("otp-generator");
-const client = require("../config/redis");
 const authModel = require("../models/auth");
 const wrapper = require("../utils/wrapper");
 const { sendMail, sendMailToResetPassword } = require("../utils/mail");
